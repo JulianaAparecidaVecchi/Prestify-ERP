@@ -4,7 +4,7 @@
 
 Este projeto foi desenvolvido por:
 
-- Arthur kalil Lima Figueiredo
+- Arthur Kalil Lima Figueiredo
 - Arthur Rodrigues Pansera
 - Jean Inácio Praes Moura
 - Juliana Aparecida Vecchi
