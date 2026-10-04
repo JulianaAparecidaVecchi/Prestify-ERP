@@ -1,0 +1,68 @@
+
+.cabecalho {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  min-height: 88px;
+  padding: 16px 32px;
+  background: #ffffff;
+  border-bottom: 1px solid #eeeaf3;
+}
+
+.cabecalho__titulo h1 {
+  margin: 0;
+  color: #2d1754;
+  font-size: 24px;
+  font-weight: 600;
+  letter-spacing: -0.5px;
+}
+
+.cabecalho__perfil {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.cabecalho__avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: #f1eafa;
+  color: #2d1754;
+}
+
+.cabecalho__informacoes-usuario {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.cabecalho__nome-usuario {
+  color: #30263d;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.cabecalho__cargo-usuario {
+  color: #8a8294;
+  font-size: 12px;
+}
+
+@media (max-width: 768px) {
+  .cabecalho {
+    min-height: 72px;
+    padding: 12px 16px;
+  }
+
+  .cabecalho__titulo h1 {
+    font-size: 20px;
+  }
+
+  .cabecalho__informacoes-usuario {
+    display: none;
+  }
+}

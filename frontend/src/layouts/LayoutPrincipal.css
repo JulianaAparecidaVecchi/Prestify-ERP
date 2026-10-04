@@ -1,0 +1,28 @@
+
+.layout-principal {
+  min-height: 100vh;
+  background: #faf9ff;
+}
+
+.layout-principal__principal {
+  min-height: 100vh;
+  margin-left: 250px;
+  display: flex;
+  flex-direction: column;
+}
+
+.layout-principal__conteudo {
+  flex: 1;
+  padding: 32px;
+  overflow-x: auto;
+}
+
+@media (max-width: 768px) {
+  .layout-principal__principal {
+    margin-left: 76px;
+  }
+
+  .layout-principal__conteudo {
+    padding: 20px 16px;
+  }
+}
