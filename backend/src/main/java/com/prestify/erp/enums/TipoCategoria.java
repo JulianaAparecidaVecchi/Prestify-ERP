@@ -1,4 +1,4 @@
-package com.prestify.erp.categoria;
+package com.prestify.erp.enums;
 
 public enum TipoCategoria {
     SERVICO,

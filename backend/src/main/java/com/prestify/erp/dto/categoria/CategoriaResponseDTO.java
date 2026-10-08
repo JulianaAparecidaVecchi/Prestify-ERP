@@ -1,4 +1,6 @@
-package com.prestify.erp.categoria;
+package com.prestify.erp.dto.categoria;
+
+import com.prestify.erp.enums.TipoCategoria;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

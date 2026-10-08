@@ -1,7 +1,13 @@
-package com.prestify.erp.categoria;
+package com.prestify.erp.service;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import com.prestify.erp.dto.categoria.CategoriaRequestDTO;
+import com.prestify.erp.dto.categoria.CategoriaResponseDTO;
+import com.prestify.erp.entity.Categoria;
+import com.prestify.erp.enums.TipoCategoria;
+import com.prestify.erp.repository.CategoriaRepository;
 
 import java.util.List;
 

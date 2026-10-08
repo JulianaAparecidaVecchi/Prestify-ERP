@@ -1,9 +1,12 @@
-package com.prestify.erp.fornecedor;
+package com.prestify.erp.controller;
 
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import com.prestify.erp.dto.fornecedor.FornecedorDTO;
+import com.prestify.erp.service.FornecedorService;
 
 import java.util.List;
 

@@ -1,4 +1,4 @@
-package com.prestify.erp.categoria;
+package com.prestify.erp.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

@@ -1,6 +1,10 @@
-package com.prestify.erp.fornecedor;
+package com.prestify.erp.service;
 
 import com.prestify.erp.common.exception.RecursoNaoEncontradoException;
+import com.prestify.erp.dto.fornecedor.FornecedorDTO;
+import com.prestify.erp.entity.Fornecedor;
+import com.prestify.erp.repository.FornecedorRepository;
+
 import org.springframework.stereotype.Service;
 
 import java.util.List;

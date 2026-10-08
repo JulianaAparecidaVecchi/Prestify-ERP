@@ -1,4 +1,6 @@
-package com.prestify.erp.fornecedor;
+package com.prestify.erp.dto.fornecedor;
+
+import com.prestify.erp.entity.Fornecedor;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;

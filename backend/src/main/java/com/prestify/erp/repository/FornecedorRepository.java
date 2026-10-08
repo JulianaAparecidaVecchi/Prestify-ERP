@@ -1,6 +1,8 @@
-package com.prestify.erp.fornecedor;
+package com.prestify.erp.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+
+import com.prestify.erp.entity.Fornecedor;
 
 import java.util.Optional;
 

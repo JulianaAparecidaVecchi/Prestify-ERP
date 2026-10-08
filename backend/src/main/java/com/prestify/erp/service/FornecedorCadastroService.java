@@ -1,8 +1,11 @@
-package com.prestify.erp.fornecedor;
+package com.prestify.erp.service;
 
 import com.prestify.erp.common.exception.RegraDeNegocioException;
 import com.prestify.erp.common.singleton.GeradorCodigoSingleton;
 import com.prestify.erp.common.template.CadastroTemplateService;
+import com.prestify.erp.entitys.fornecedor.Fornecedor;
+import com.prestify.erp.repository.FornecedorRepository;
+
 import org.springframework.stereotype.Service;
 
 /**

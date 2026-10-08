@@ -1,9 +1,14 @@
-package com.prestify.erp.categoria;
+package com.prestify.erp.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+
+import com.prestify.erp.dto.categoria.CategoriaRequestDTO;
+import com.prestify.erp.dto.categoria.CategoriaResponseDTO;
+import com.prestify.erp.enums.TipoCategoria;
+import com.prestify.erp.service.CategoriaService;
 
 import java.util.List;
 

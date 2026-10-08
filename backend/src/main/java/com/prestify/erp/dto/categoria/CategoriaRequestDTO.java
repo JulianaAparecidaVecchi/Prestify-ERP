@@ -1,4 +1,6 @@
-package com.prestify.erp.categoria;
+package com.prestify.erp.dto.categoria;
+
+import com.prestify.erp.enums.TipoCategoria;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;

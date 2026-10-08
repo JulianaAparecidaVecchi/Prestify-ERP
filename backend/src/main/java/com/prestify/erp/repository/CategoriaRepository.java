@@ -1,6 +1,9 @@
-package com.prestify.erp.categoria;
+package com.prestify.erp.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+
+import com.prestify.erp.entity.Categoria;
+import com.prestify.erp.enums.TipoCategoria;
 
 import java.util.List;
 import java.util.Optional;

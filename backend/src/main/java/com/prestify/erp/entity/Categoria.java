@@ -1,4 +1,6 @@
-package com.prestify.erp.categoria;
+package com.prestify.erp.entity;
+
+import com.prestify.erp.enums.TipoCategoria;
 
 import jakarta.persistence.*;
 import lombok.Getter;
