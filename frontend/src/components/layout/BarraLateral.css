@@ -1,106 +1,107 @@
+/* =====================================================
+   BarraLateral — menu lateral fixo
+   Visual: fundo cinza claro, texto escuro, item ativo
+   laranja e linha roxa na borda direita (igual ao design).
+   ===================================================== */
 
 .barra-lateral {
   position: fixed;
   top: 0;
   left: 0;
+  z-index: 100;
   display: flex;
   flex-direction: column;
-  width: 250px;
+  width: var(--largura-sidebar);
   height: 100vh;
-  padding: 24px 16px 18px;
-  background: #2d1754;
-  color: #ffffff;
-  z-index: 100;
+  padding: var(--espaco-4) var(--espaco-3) var(--espaco-4);
+  background: var(--cor-fundo-sidebar);
+  border-right: 2px solid var(--cor-primaria);
+  color: var(--cor-texto);
 }
+
+/* ---------- Logo ---------- */
 
 .barra-lateral__marca {
   display: flex;
   align-items: center;
-  min-height: 72px;
-  padding: 0 16px 24px;
+  padding: var(--espaco-2) var(--espaco-3) var(--espaco-5);
 }
 
-.barra-lateral__nome {
-  color: #ffffff;
-  font-size: 28px;
-  font-weight: 700;
-  letter-spacing: -1px;
+.barra-lateral__logo {
+  display: block;
+  width: 100%;
+  max-width: 190px;
+  height: auto;
 }
+
+/* ---------- Navegação ---------- */
 
 .barra-lateral__navegacao {
   display: flex;
   flex: 1;
   flex-direction: column;
-  gap: 8px;
+  gap: var(--espaco-1);
   overflow-y: auto;
-  padding-top: 12px;
 }
 
 .barra-lateral__link {
   display: flex;
   align-items: center;
-  gap: 14px;
-  min-height: 48px;
-  padding: 0 16px;
-  border-radius: 8px;
-  color: #e6def2;
-  font-size: 14px;
-  font-weight: 500;
+  gap: var(--espaco-3);
+  min-height: 38px;
+  padding: 0 var(--espaco-3);
+  border-radius: var(--raio-md);
+  color: var(--cor-texto);
+  font-size: var(--texto-md);
+  font-weight: var(--peso-semibold);
   text-decoration: none;
   transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 .barra-lateral__link:hover {
-  background: rgba(255, 255, 255, 0.08);
-  color: #ffffff;
+  background: rgba(0, 0, 0, 0.06);
 }
 
-.barra-lateral__link--ativo {
-  background: #f28c28;
-  color: #ffffff;
-  font-weight: 600;
-}
-
+.barra-lateral__link--ativo,
 .barra-lateral__link--ativo:hover {
-  background: #e77e1b;
-  color: #ffffff;
+  background: var(--cor-destaque);
+  color: var(--cor-texto-sobre-primaria);
 }
+
+/* ---------- Rodapé ---------- */
 
 .barra-lateral__rodape {
-  padding: 20px 12px 0;
-  border-top: 1px solid rgba(255, 255, 255, 0.12);
-  color: #c7badb;
-  font-size: 11px;
-  line-height: 1.6;
+  padding-top: var(--espaco-4);
+  color: var(--cor-texto-secundario);
+  font-size: var(--texto-xs);
+  line-height: 1.5;
   text-align: center;
 }
 
-.barra-lateral__rodape p {
-  margin: 0;
-}
+/* ---------- Telas pequenas: sidebar compacta (só ícones) ---------- */
 
 @media (max-width: 768px) {
   .barra-lateral {
-    width: 76px;
-    padding: 20px 10px;
+    width: var(--largura-sidebar-compacta);
+    padding: var(--espaco-4) var(--espaco-2);
   }
 
+  /* Mostra só o pinguim: a caixa corta o texto "Prestify" da logo */
   .barra-lateral__marca {
-    justify-content: center;
-    padding: 0 0 24px;
+    width: 31px;
+    margin: 0 auto;
+    padding: var(--espaco-2) 0 var(--espaco-4);
+    overflow: hidden;
   }
 
-  .barra-lateral__nome {
-    font-size: 0;
-  }
-
-  .barra-lateral__nome::first-letter {
-    font-size: 24px;
+  .barra-lateral__logo {
+    width: auto;
+    max-width: none;
+    height: 44px;
   }
 
   .barra-lateral__link {
     justify-content: center;
-    gap: 0;
     padding: 0;
   }
 
