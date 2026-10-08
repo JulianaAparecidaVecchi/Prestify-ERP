@@ -1,4 +1,3 @@
-
 import { NavLink } from 'react-router-dom'
 import {
   Home,
@@ -10,9 +9,11 @@ import {
   Archive,
   Truck,
   DollarSign,
+  Briefcase,
   Settings,
 } from 'lucide-react'
 
+import logoPrestify from '../../assets/logo-prestify.png'
 import './BarraLateral.css'
 
 const itensMenu = [
@@ -25,6 +26,7 @@ const itensMenu = [
   { nome: 'Estoque', caminho: '/estoque', icone: Archive },
   { nome: 'Fornecedores', caminho: '/fornecedores', icone: Truck },
   { nome: 'Financeiro', caminho: '/financeiro', icone: DollarSign },
+  { nome: 'RH', caminho: '/rh', icone: Briefcase },
   { nome: 'Configurações', caminho: '/configuracoes', icone: Settings },
 ]
 
@@ -32,10 +34,14 @@ function BarraLateral() {
   return (
     <aside className="barra-lateral">
       <div className="barra-lateral__marca">
-        <span className="barra-lateral__nome">Prestify</span>
+        <img
+          src={logoPrestify}
+          alt="Prestify"
+          className="barra-lateral__logo"
+        />
       </div>
 
-      <nav className="barra-lateral__navegacao">
+      <nav className="barra-lateral__navegacao" aria-label="Menu principal">
         {itensMenu.map((item) => {
           const Icone = item.icone
 

@@ -1,0 +1,61 @@
+/* =====================================================
+   global.css — Reset e estilos base do Prestify
+   Depende de tokens.css (importar tokens ANTES deste).
+   ===================================================== */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  min-width: 320px;
+  min-height: 100%;
+  margin: 0;
+}
+
+html {
+  font-family: var(--fonte-base);
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+}
+
+body {
+  min-height: 100vh;
+  background: var(--cor-fundo-pagina);
+  color: var(--cor-texto);
+  font-size: var(--texto-md);
+}
+
+/* Elementos de formulário herdam a fonte do sistema */
+button,
+input,
+select,
+textarea {
+  font: inherit;
+  color: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+a {
+  color: var(--cor-primaria);
+}
+
+h1,
+h2,
+h3,
+p {
+  margin: 0;
+}
+
+/* Foco visível para navegação por teclado (acessibilidade) */
+:focus-visible {
+  outline: 2px solid var(--cor-primaria);
+  outline-offset: 2px;
+}

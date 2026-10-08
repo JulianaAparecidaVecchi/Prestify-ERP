@@ -1,65 +1,85 @@
+/* =====================================================
+   Cabecalho — barra superior
+   Visual: sem título, tudo alinhado à direita:
+   sino, avatar com iniciais, nome, perfil e seta.
+   ===================================================== */
 
 .cabecalho {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-end;
+  gap: var(--espaco-4);
   width: 100%;
-  min-height: 88px;
-  padding: 16px 32px;
-  background: #ffffff;
-  border-bottom: 1px solid #eeeaf3;
+  min-height: 72px;
+  padding: var(--espaco-4) var(--espaco-6);
+  background: var(--cor-fundo-pagina);
 }
 
-.cabecalho__titulo h1 {
-  margin: 0;
-  color: #2d1754;
-  font-size: 24px;
-  font-weight: 600;
-  letter-spacing: -0.5px;
-}
-
+/* Botões sem aparência de botão (só o conteúdo aparece) */
+.cabecalho__notificacoes,
 .cabecalho__perfil {
   display: flex;
   align-items: center;
-  gap: 12px;
+  border: none;
+  background: transparent;
+  color: var(--cor-texto);
 }
+
+.cabecalho__notificacoes {
+  padding: var(--espaco-1);
+  border-radius: var(--raio-md);
+}
+
+.cabecalho__perfil {
+  gap: var(--espaco-3);
+  padding: 0;
+  text-align: left;
+}
+
+/* ---------- Avatar ---------- */
 
 .cabecalho__avatar {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 42px;
-  height: 42px;
-  border-radius: 50%;
-  background: #f1eafa;
-  color: #2d1754;
+  width: 44px;
+  height: 44px;
+  border-radius: var(--raio-total);
+  color: var(--cor-texto);
+  font-size: var(--texto-md);
+  font-weight: var(--peso-negrito);
 }
+
+.cabecalho__avatar--cor-1 { background: var(--cor-avatar-1); }
+.cabecalho__avatar--cor-2 { background: var(--cor-avatar-2); }
+.cabecalho__avatar--cor-3 { background: var(--cor-avatar-3); }
+.cabecalho__avatar--cor-4 { background: var(--cor-avatar-4); }
+.cabecalho__avatar--cor-5 { background: var(--cor-avatar-5); }
+
+/* ---------- Nome e perfil ---------- */
 
 .cabecalho__informacoes-usuario {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 2px;
 }
 
 .cabecalho__nome-usuario {
-  color: #30263d;
-  font-size: 14px;
-  font-weight: 600;
+  font-size: var(--texto-md);
+  font-weight: var(--peso-medio);
+  line-height: 1.2;
 }
 
-.cabecalho__cargo-usuario {
-  color: #8a8294;
-  font-size: 12px;
+.cabecalho__perfil-usuario {
+  color: var(--cor-texto-secundario);
+  font-size: var(--texto-xs);
+  line-height: 1.2;
 }
 
 @media (max-width: 768px) {
   .cabecalho {
-    min-height: 72px;
-    padding: 12px 16px;
-  }
-
-  .cabecalho__titulo h1 {
-    font-size: 20px;
+    min-height: 64px;
+    padding: var(--espaco-3) var(--espaco-4);
   }
 
   .cabecalho__informacoes-usuario {
