@@ -1,46 +1,27 @@
 package com.prestify.erp.entity;
- 
+
+import com.prestify.erp.enums.TipoPessoa;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
- 
+
 @Entity
-@Table(
-    name = "fornecedor",
-    uniqueConstraints = {
-        @UniqueConstraint(
-            name = "uk_fornecedor_organizacao_documento",
-            columnNames = {"organizacao_id", "documento"}
-        )
-    }
-)
+@Table(name = "fornecedor")
+@Inheritance(strategy = InheritanceType.JOINED)
 @Getter
 @Setter
 @NoArgsConstructor
-public class Fornecedor {
+public abstract class Fornecedor {
  
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id_fornecedor")
     private Long id;
  
     @Column(name = "organizacao_id", nullable = false)
     private Long organizacaoId;
- 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "tipo_pessoa", nullable = false, length = 20)
-    private TipoPessoa tipoPessoa;
-
-    @Column(name = "nome", nullable = false, length = 150)
-    private String nome;
-
-    @Column(name = "documento", nullable = false, length = 14)
-    private String documento;
-
-    @Column(name = "data_nascimento")
-    private LocalDate dataNascimento;
  
     @Column(name = "segmento_atuacao", length = 100)
     private String segmentoAtuacao;
@@ -62,6 +43,8 @@ public class Fornecedor {
  
     @Column(name = "data_atualizacao", nullable = false)
     private LocalDateTime dataAtualizacao;
+
+    public abstract TipoPessoa getTipoPessoa(); // PF ou PJ
  
     @PrePersist
     void aoCriar() {

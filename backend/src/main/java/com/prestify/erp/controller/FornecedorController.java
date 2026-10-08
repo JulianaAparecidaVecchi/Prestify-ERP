@@ -1,49 +1,66 @@
 package com.prestify.erp.controller;
 
-import jakarta.validation.Valid;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
-import com.prestify.erp.dto.fornecedor.FornecedorDTO;
+import com.prestify.erp.dto.fornecedor.FornecedorRequestDTO;
+import com.prestify.erp.dto.fornecedor.FornecedorResponseDTO;
 import com.prestify.erp.service.FornecedorService;
-
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/fornecedores")
+@RequiredArgsConstructor
 public class FornecedorController {
-
-    private final FornecedorService service;
-
-    public FornecedorController(FornecedorService service) {
-        this.service = service;
-    }
-
-    @GetMapping
-    public List<FornecedorDTO> listar() {
-        return service.listarTodos();
-    }
-
-    @GetMapping("/{id}")
-    public FornecedorDTO buscar(@PathVariable Long id) {
-        return service.buscarPorId(id);
-    }
-
+ 
+    private final FornecedorService fornecedorService;
+ 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public FornecedorDTO cadastrar(@Valid @RequestBody FornecedorDTO dto) {
-        return service.cadastrar(dto);
+    public FornecedorResponseDTO cadastrar(
+            @Valid @RequestBody FornecedorRequestDTO dados,
+            @RequestParam Long organizacaoId) {
+ 
+        return fornecedorService.cadastrar(dados, organizacaoId);
     }
-
+ 
+    @GetMapping
+    public List<FornecedorResponseDTO> listar(@RequestParam Long organizacaoId) {
+        return fornecedorService.listar(organizacaoId);
+    }
+ 
+    @GetMapping("/{id}")
+    public FornecedorResponseDTO buscarPorId(
+            @PathVariable Long id,
+            @RequestParam Long organizacaoId) {
+ 
+        return fornecedorService.buscarPorId(id, organizacaoId);
+    }
+ 
     @PutMapping("/{id}")
-    public FornecedorDTO atualizar(@PathVariable Long id, @Valid @RequestBody FornecedorDTO dto) {
-        return service.atualizar(id, dto);
+    public FornecedorResponseDTO atualizar(
+            @PathVariable Long id,
+            @Valid @RequestBody FornecedorRequestDTO dados,
+            @RequestParam Long organizacaoId) {
+ 
+        return fornecedorService.atualizar(id, dados, organizacaoId);
     }
-
-    @DeleteMapping("/{id}")
+ 
+    @PatchMapping("/{id}/inativar")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void remover(@PathVariable Long id) {
-        service.remover(id);
+    public void inativar(
+            @PathVariable Long id,
+            @RequestParam Long organizacaoId) {
+ 
+        fornecedorService.inativar(id, organizacaoId);
+    }
+ 
+    @PatchMapping("/{id}/reativar")
+    public FornecedorResponseDTO reativar(
+            @PathVariable Long id,
+            @RequestParam Long organizacaoId) {
+ 
+        return fornecedorService.reativar(id, organizacaoId);
     }
 }
