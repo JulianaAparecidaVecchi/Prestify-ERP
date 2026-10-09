@@ -17,7 +17,7 @@ Este projeto foi desenvolvido por:
 ### Backend
 
 ```powershell
-cd prestify-backend
+cd backend
 .\mvnw.cmd spring-boot:run
 ```
 
@@ -32,7 +32,7 @@ http://localhost:8080
 Em outro terminal:
 
 ```powershell
-cd prestify-frontend
+cd frontend
 npm.cmd install
 npm.cmd run dev
 ```
