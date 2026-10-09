@@ -1,0 +1,86 @@
+/* =====================================================
+   CampoFormulario — rótulo + campo + erro
+   Visual: fundo cinza claro, borda fina, asterisco vermelho.
+   ===================================================== */
+
+.campo-formulario {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-1);
+  min-width: 0;
+}
+
+.campo-formulario__rotulo {
+  font-size: var(--texto-sm);
+  font-weight: var(--peso-semibold);
+}
+
+.campo-formulario__obrigatorio {
+  color: var(--cor-obrigatorio);
+}
+
+.campo-formulario__opcional {
+  font-weight: var(--peso-normal);
+}
+
+.campo-formulario__controle {
+  width: 100%;
+  min-height: var(--altura-campo);
+  padding: 0 var(--espaco-3);
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio-sm);
+  background: var(--cor-fundo-campo);
+  font-size: var(--texto-sm);
+}
+
+.campo-formulario__controle::placeholder {
+  color: var(--cor-texto-placeholder);
+}
+
+.campo-formulario__controle:focus {
+  outline: 2px solid var(--cor-primaria);
+  outline-offset: 0;
+}
+
+.campo-formulario__controle:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.campo-formulario__controle--erro {
+  border-color: var(--cor-obrigatorio);
+}
+
+.campo-formulario__erro {
+  color: var(--cor-obrigatorio);
+  font-size: var(--texto-xs);
+}
+
+/* ---------- Área de texto ---------- */
+
+.campo-formulario__area-texto {
+  min-height: 96px;
+  padding: var(--espaco-3);
+  resize: vertical;
+}
+
+/* ---------- Seleção (select com seta própria) ---------- */
+
+.campo-formulario__selecao {
+  position: relative;
+}
+
+.campo-formulario__selecao select {
+  appearance: none;
+  padding-right: 36px;
+  cursor: pointer;
+}
+
+.campo-formulario__seta {
+  position: absolute;
+  top: 50%;
+  right: var(--espaco-3);
+  transform: translateY(-50%);
+  pointer-events: none;
+  color: var(--cor-texto-secundario);
+}

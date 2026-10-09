@@ -1,0 +1,67 @@
+/* =====================================================
+   Botao — botão padrão
+   Variantes: primario (roxo), contorno, cinza, perigo (vermelho)
+   ===================================================== */
+
+.botao {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--espaco-2);
+  min-height: var(--altura-botao);
+  padding: 0 var(--espaco-5);
+  border: 1px solid transparent;
+  border-radius: var(--raio-md);
+  font-size: var(--texto-lg);
+  font-weight: var(--peso-medio);
+  white-space: nowrap;
+  transition: background-color 0.2s ease;
+}
+
+.botao:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Roxo cheio: ação principal da tela */
+.botao--primario {
+  background: var(--cor-primaria);
+  color: var(--cor-texto-sobre-primaria);
+  box-shadow: var(--sombra-botao);
+}
+
+.botao--primario:hover:not(:disabled) {
+  background: var(--cor-primaria-hover);
+}
+
+/* Contorno roxo: ação secundária */
+.botao--contorno {
+  background: var(--cor-fundo-pagina);
+  border-color: var(--cor-primaria);
+  color: var(--cor-primaria);
+  font-size: var(--texto-md);
+}
+
+.botao--contorno:hover:not(:disabled) {
+  background: var(--cor-primaria-suave);
+}
+
+/* Vermelho: ação destrutiva (excluir) */
+.botao--perigo {
+  background: var(--cor-excluir);
+  color: var(--cor-texto-sobre-primaria);
+}
+
+.botao--perigo:hover:not(:disabled) {
+  filter: brightness(0.93);
+}
+
+/* Cinza: cancelar */
+.botao--cinza {
+  background: var(--cor-visualizar);
+  color: var(--cor-texto-sobre-primaria);
+}
+
+.botao--cinza:hover:not(:disabled) {
+  background: #a8a8a8;
+}

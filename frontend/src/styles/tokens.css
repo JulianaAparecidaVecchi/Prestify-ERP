@@ -35,6 +35,9 @@
   --cor-editar: #fdf24b;            /* botão amarelo de editar */
   --cor-excluir: #f87171;           /* botão vermelho de excluir */
   --cor-visualizar: #c1c1c1;        /* botão cinza de visualizar */
+  --cor-erro-fundo: #fde8e8;        /* caixas de mensagem de erro */
+  --cor-erro-texto: #a40000;
+  --cor-sobreposicao: rgba(0, 0, 0, 0.45);  /* fundo escuro atrás de modais */
   --cor-sucesso-fundo: #dcf7dc;     /* badge "Ativo" */
   --cor-sucesso-texto: #1f7a1f;
   --cor-inativo-fundo: #d9d9d9;     /* badge "Inativo" */

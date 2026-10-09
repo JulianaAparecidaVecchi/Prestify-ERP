@@ -1,0 +1,57 @@
+/* =====================================================
+   ModalConfirmacao — janela de confirmação
+   ===================================================== */
+
+.modal-confirmacao__fundo {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--espaco-4);
+  background: var(--cor-sobreposicao);
+}
+
+.modal-confirmacao {
+  width: 100%;
+  max-width: 440px;
+  padding: var(--espaco-5);
+  border-radius: var(--raio-lg);
+  background: var(--cor-fundo-pagina);
+  box-shadow: var(--sombra-card);
+}
+
+.modal-confirmacao__titulo {
+  font-size: var(--texto-lg);
+  font-weight: var(--peso-negrito);
+}
+
+.modal-confirmacao__mensagem {
+  margin-top: var(--espaco-3);
+  color: var(--cor-texto-secundario);
+  font-size: var(--texto-md);
+  line-height: 1.5;
+}
+
+.modal-confirmacao__erro {
+  margin-top: var(--espaco-3);
+  padding: var(--espaco-3);
+  border-radius: var(--raio-md);
+  background: var(--cor-erro-fundo);
+  color: var(--cor-erro-texto);
+  font-size: var(--texto-sm);
+}
+
+.modal-confirmacao__acoes {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--espaco-3);
+  margin-top: var(--espaco-5);
+}
+
+/* Botões menores dentro do modal */
+.modal-confirmacao__acoes .botao {
+  font-size: var(--texto-md);
+  padding: 0 var(--espaco-4);
+}

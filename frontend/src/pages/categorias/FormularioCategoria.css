@@ -1,0 +1,29 @@
+/* =====================================================
+   FormularioCategoria — criar, editar e visualizar
+   ===================================================== */
+
+.formulario-categoria {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.formulario-categoria__aviso {
+  color: var(--cor-texto-secundario);
+}
+
+.formulario-categoria__erro {
+  margin-bottom: var(--espaco-4);
+  padding: var(--espaco-3) var(--espaco-4);
+  border-radius: var(--raio-md);
+  background: var(--cor-erro-fundo);
+  color: var(--cor-erro-texto);
+  font-size: var(--texto-sm);
+}
+
+.formulario-categoria__acoes {
+  display: flex;
+  justify-content: center;
+  gap: var(--espaco-4);
+  margin-top: var(--espaco-5);
+}

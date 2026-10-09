@@ -1,0 +1,59 @@
+/* =====================================================
+   CartaoFormulario — seção de formulário em cartão
+   ===================================================== */
+
+.cartao-formulario {
+  padding: var(--espaco-4) var(--espaco-5) var(--espaco-5);
+  border-radius: var(--raio-lg);
+  background: var(--cor-fundo-card);
+  box-shadow: var(--sombra-card);
+}
+
+.cartao-formulario__cabecalho {
+  display: flex;
+  align-items: center;
+  gap: var(--espaco-2);
+  margin-bottom: var(--espaco-4);
+}
+
+.cartao-formulario__icone {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: var(--raio-md);
+  background: var(--cor-primaria-suave);
+  color: var(--cor-primaria);
+}
+
+.cartao-formulario__titulo {
+  font-size: var(--texto-md);
+  font-weight: var(--peso-negrito);
+}
+
+.cartao-formulario__conteudo {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--espaco-4) var(--espaco-5);
+}
+
+/* Campo que ocupa uma linha inteira (ex.: Descrição) */
+.cartao-formulario__conteudo > .campo-formulario--linha-inteira {
+  grid-column: 1 / -1;
+}
+
+/* Campo que ocupa duas colunas (ex.: Nome) */
+.cartao-formulario__conteudo > .campo-formulario--duas-colunas {
+  grid-column: span 2;
+}
+
+@media (max-width: 768px) {
+  .cartao-formulario__conteudo {
+    grid-template-columns: 1fr;
+  }
+
+  .cartao-formulario__conteudo > .campo-formulario--duas-colunas {
+    grid-column: auto;
+  }
+}
