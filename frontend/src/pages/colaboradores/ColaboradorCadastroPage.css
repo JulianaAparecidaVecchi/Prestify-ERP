@@ -1,0 +1,243 @@
+.colaborador-cadastro {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  width: 100%;
+  max-width: 980px;
+  margin: 0 auto;
+}
+
+.colaborador-cadastro__voltar {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0;
+  border: none;
+  background: none;
+  color: #6b42a0;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.colaborador-cadastro__voltar:hover {
+  color: #563382;
+}
+
+.colaborador-cadastro__cabecalho h2 {
+  margin: 0 0 4px;
+  color: #1f1530;
+  font-size: 26px;
+  font-weight: 700;
+}
+
+.colaborador-cadastro__cabecalho p {
+  margin: 0;
+  color: #6b6275;
+  font-size: 14px;
+}
+
+.colaborador-cadastro__alerta {
+  padding: 12px 16px;
+  border-radius: 8px;
+  font-size: 14px;
+}
+
+.colaborador-cadastro__alerta--sucesso {
+  border: 1px solid #a7e3c4;
+  background: #ecfaf2;
+  color: #1c7a4a;
+}
+
+.colaborador-cadastro__alerta--erro {
+  border: 1px solid #f3c1c1;
+  background: #fdf1f1;
+  color: #b42323;
+}
+
+.colaborador-cadastro form {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.colaborador-cadastro__secao {
+  margin: 0;
+  min-width: 0;
+  padding: 20px 24px 24px;
+  border: 1px solid #e8e4ed;
+  border-radius: 12px;
+  background: #ffffff;
+  box-shadow: 0 2px 8px rgba(45, 23, 84, 0.06);
+}
+
+.colaborador-cadastro__secao legend {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 6px;
+  color: #30263d;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.colaborador-cadastro__secao legend svg {
+  color: #6b42a0;
+}
+
+.colaborador-cadastro__grade {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px 20px;
+  margin-top: 12px;
+}
+
+.colaborador-cadastro__grade--endereco-1 {
+  grid-template-columns: 1fr 2fr 0.8fr 1.4fr;
+  margin-bottom: 4px;
+}
+
+.colaborador-cadastro__campo {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+.colaborador-cadastro__campo label,
+.colaborador-cadastro__rotulo {
+  color: #4b4355;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.colaborador-cadastro__obrigatorio {
+  color: #d92d2d;
+}
+
+.colaborador-cadastro__campo input[type='text'],
+.colaborador-cadastro__campo input[type='email'],
+.colaborador-cadastro__campo input[type='tel'],
+.colaborador-cadastro__campo input[type='number'],
+.colaborador-cadastro__campo input[type='password'],
+.colaborador-cadastro__campo input[type='date'],
+.colaborador-cadastro__campo select {
+  width: 100%;
+  min-height: 40px;
+  padding: 0 12px;
+  border: 1px solid #e5e0eb;
+  border-radius: 8px;
+  background: #f7f5fa;
+  color: #30263d;
+  font-size: 14px;
+}
+
+.colaborador-cadastro__campo input::placeholder {
+  color: #a49cac;
+}
+
+.colaborador-cadastro__campo input:focus,
+.colaborador-cadastro__campo select:focus {
+  outline: none;
+  border-color: #6b42a0;
+  background: #ffffff;
+  box-shadow: 0 0 0 3px rgba(107, 66, 160, 0.12);
+}
+
+.colaborador-cadastro__campo input[aria-invalid='true'],
+.colaborador-cadastro__campo select[aria-invalid='true'] {
+  border-color: #d92d2d;
+}
+
+.colaborador-cadastro__erro {
+  color: #d92d2d;
+  font-size: 12px;
+}
+
+.colaborador-cadastro__opcoes {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  min-height: 40px;
+}
+
+.colaborador-cadastro__opcoes label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: #30263d;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.colaborador-cadastro__opcoes input[type='radio'] {
+  accent-color: #6b42a0;
+}
+
+.colaborador-cadastro__senha {
+  position: relative;
+}
+
+.colaborador-cadastro__senha input {
+  padding-right: 40px !important;
+}
+
+.colaborador-cadastro__senha button {
+  position: absolute;
+  top: 50%;
+  right: 10px;
+  display: flex;
+  padding: 4px;
+  border: none;
+  background: none;
+  color: #8a8294;
+  transform: translateY(-50%);
+  cursor: pointer;
+}
+
+.colaborador-cadastro__senha button:hover {
+  color: #6b42a0;
+}
+
+.colaborador-cadastro__acoes {
+  display: flex;
+  justify-content: center;
+}
+
+.colaborador-cadastro__botao-cadastrar {
+  min-width: 180px;
+  min-height: 44px;
+  padding: 0 28px;
+  border: none;
+  border-radius: 8px;
+  background: #6b42a0;
+  color: #ffffff;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.colaborador-cadastro__botao-cadastrar:hover:not(:disabled) {
+  background: #563382;
+}
+
+.colaborador-cadastro__botao-cadastrar:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+@media (max-width: 900px) {
+  .colaborador-cadastro__grade,
+  .colaborador-cadastro__grade--endereco-1 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 600px) {
+  .colaborador-cadastro__grade,
+  .colaborador-cadastro__grade--endereco-1 {
+    grid-template-columns: 1fr;
+  }
+}

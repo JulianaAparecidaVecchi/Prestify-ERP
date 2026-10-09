@@ -1,5 +1,7 @@
 package com.prestify.erp.dto.endereco;
 
+import com.prestify.erp.entity.Endereco;
+
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -32,4 +34,23 @@ public class EnderecoDTO {
  
     @Size(max = 9, message = "O CEP deve ter no máximo 9 caracteres.")
     private String cep;
+    public void aplicarEm(Endereco endereco) {
+        endereco.setCep(cep.replaceAll("\\D", ""));
+        endereco.setLogradouro(logradouro.trim());
+        endereco.setNumero(numero.trim());
+        endereco.setComplemento(complemento == null || complemento.isBlank() ? null : complemento.trim());
+        endereco.setBairro(bairro.trim());
+        endereco.setCidade(cidade.trim());
+        endereco.setEstado(estado.trim().toUpperCase());
+    }
+    public static EnderecoDTO fromEntity(Endereco e) {
+        return new EnderecoDTO(e.getCep(), e.getLogradouro(), e.getNumero(),
+                e.getComplemento(), e.getBairro(), e.getCidade(), e.getEstado());
+    }
+
+    public Endereco toEntity() {
+        Endereco endereco = new Endereco();
+        aplicarEm(endereco);
+        return endereco;
+    }
 }
