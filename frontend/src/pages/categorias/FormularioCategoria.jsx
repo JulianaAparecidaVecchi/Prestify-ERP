@@ -34,7 +34,7 @@ const textosModo = {
   },
 }
 
-const valoresIniciais = { nome: '', tipo: '', descricao: '' }
+const valoresIniciais = { nome: '', tipo: '' }
 
 /*
   Um único formulário para as três situações:
@@ -67,7 +67,6 @@ function FormularioCategoria({ modo = 'criar' }) {
         setValores({
           nome: categoria.nome ?? '',
           tipo: categoria.tipo ?? '',
-          descricao: categoria.descricao ?? '',
         })
       })
       .catch((falha) => {
@@ -114,7 +113,6 @@ function FormularioCategoria({ modo = 'criar' }) {
     const dados = {
       nome: valores.nome.trim(),
       tipo: valores.tipo,
-      descricao: valores.descricao.trim(),
     }
 
     setSalvando(true)
@@ -172,18 +170,6 @@ function FormularioCategoria({ modo = 'criar' }) {
               value={valores.tipo}
               onChange={alterarCampo}
               erro={erros.tipo}
-              disabled={somenteLeitura}
-            />
-
-            <CampoFormulario
-              className="campo-formulario--linha-inteira"
-              tipo="areaTexto"
-              rotulo="Descrição"
-              opcional
-              name="descricao"
-              placeholder="Descreva a categoria, o que ela agrupa, observações importantes"
-              value={valores.descricao}
-              onChange={alterarCampo}
               disabled={somenteLeitura}
             />
           </CartaoFormulario>

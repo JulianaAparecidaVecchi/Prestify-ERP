@@ -1,10 +1,12 @@
 /*
   categoriaApi.js — chamadas do backend relacionadas a categorias.
 
-  Contrato esperado da API:
-    GET    /categorias        -> [ { id, nome, tipo, descricao } ]
-    GET    /categorias/:id    -> { id, nome, tipo, descricao }
-    POST   /categorias        -> cria (corpo: { nome, tipo, descricao })
+  Rotas do backend (CategoriaController). O prefixo /api vem do VITE_API_URL
+  e o organizacaoId é acrescentado automaticamente pelo http.js.
+
+    GET    /categorias        -> [ { id, nome, tipo } ]
+    GET    /categorias/:id    -> { id, nome, tipo }
+    POST   /categorias        -> cria (corpo: { nome, tipo })
     PUT    /categorias/:id    -> atualiza (mesmo corpo)
     DELETE /categorias/:id    -> exclui
 

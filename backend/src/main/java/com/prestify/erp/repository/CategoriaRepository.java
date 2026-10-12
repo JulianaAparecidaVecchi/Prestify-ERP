@@ -10,6 +10,8 @@ import java.util.Optional;
 
 public interface CategoriaRepository extends JpaRepository<Categoria, Long> {
 
+    List<Categoria> findAllByOrganizacaoId(Long organizacaoId);
+
     List<Categoria> findAllByOrganizacaoIdAndTipo(
         Long organizacaoId,
         TipoCategoria tipo

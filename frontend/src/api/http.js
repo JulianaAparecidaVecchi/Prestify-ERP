@@ -1,19 +1,32 @@
 /*
   http.js — único ponto de conexão com o backend.
 
-  O endereço da API vem da variável VITE_API_URL (arquivo .env).
-  Se ela não existir, usa http://localhost:8080.
+  Configuração (arquivo .env):
+    VITE_API_URL          endereço da API   (padrão: http://localhost:8080/api)
+    VITE_ORGANIZACAO_ID   id da organização (padrão: 1)
+
+  O backend exige o parâmetro "organizacaoId" em todas as rotas. Enquanto
+  não existe login, ele vem do .env. Quando o login existir, o id passará
+  a vir do usuário logado (e só este arquivo precisa mudar).
+
   Todas as chamadas do sistema passam por aqui, então se o endereço,
   o token de login ou o tratamento de erro mudarem, muda só este arquivo.
 */
 
-const URL_BASE = import.meta.env.VITE_API_URL || 'http://localhost:8080'
+const URL_BASE = import.meta.env.VITE_API_URL || 'http://localhost:8080/api'
+const ORGANIZACAO_ID = import.meta.env.VITE_ORGANIZACAO_ID || '1'
+
+// Acrescenta ?organizacaoId=1 (ou &organizacaoId=1) ao caminho
+function comOrganizacao(caminho) {
+  const separador = caminho.includes('?') ? '&' : '?'
+  return `${caminho}${separador}organizacaoId=${ORGANIZACAO_ID}`
+}
 
 async function requisitar(caminho, opcoes = {}) {
   let resposta
 
   try {
-    resposta = await fetch(`${URL_BASE}${caminho}`, {
+    resposta = await fetch(`${URL_BASE}${comOrganizacao(caminho)}`, {
       headers: { 'Content-Type': 'application/json' },
       ...opcoes,
     })

@@ -7,6 +7,8 @@ import com.prestify.erp.dto.categoria.CategoriaRequestDTO;
 import com.prestify.erp.dto.categoria.CategoriaResponseDTO;
 import com.prestify.erp.entity.Categoria;
 import com.prestify.erp.enums.TipoCategoria;
+import com.prestify.erp.exception.CategoriaExceptions.CategoriaDuplicadaException;
+import com.prestify.erp.exception.CategoriaExceptions.CategoriaNaoEncontradaException;
 import com.prestify.erp.repository.CategoriaRepository;
 
 import java.util.List;
@@ -48,8 +50,12 @@ public class CategoriaService {
             TipoCategoria tipo,
             Long organizacaoId) {
 
-        return categoriaRepository
-            .findAllByOrganizacaoIdAndTipo(organizacaoId, tipo)
+        // Sem tipo: devolve todas as categorias da organização
+        List<Categoria> categorias = (tipo == null)
+            ? categoriaRepository.findAllByOrganizacaoId(organizacaoId)
+            : categoriaRepository.findAllByOrganizacaoIdAndTipo(organizacaoId, tipo);
+
+        return categorias
             .stream()
             .map(this::converterParaResponse)
             .toList();
@@ -88,12 +94,17 @@ public class CategoriaService {
         return converterParaResponse(categoriaAtualizada);
     }
 
+    @Transactional
+    public void excluir(Long id, Long organizacaoId) {
+        Categoria categoria = buscarCategoria(id, organizacaoId);
+
+        categoriaRepository.delete(categoria);
+    }
+
     private Categoria buscarCategoria(Long id, Long organizacaoId) {
         return categoriaRepository
             .findByIdAndOrganizacaoId(id, organizacaoId)
-            .orElseThrow(() ->
-                new IllegalArgumentException("Categoria não encontrada.")
-            );
+            .orElseThrow(CategoriaNaoEncontradaException::new);
     }
 
     private void validarNomeDuplicado(
@@ -120,9 +131,7 @@ public class CategoriaService {
                     .orElse(false);
 
             if (!mesmaCategoria) {
-                throw new IllegalArgumentException(
-                    "Já existe uma categoria com esse nome."
-                );
+                throw new CategoriaDuplicadaException();
             }
         }
     }

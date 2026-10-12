@@ -28,9 +28,13 @@ public class CategoriaController {
         return categoriaService.cadastrar(dados, organizacaoId);
     }
 
+    /**
+     * Lista as categorias da organização.
+     * O parâmetro "tipo" é opcional: sem ele, devolve todas (serviço e produto).
+     */
     @GetMapping
     public List<CategoriaResponseDTO> listar(
-            @RequestParam TipoCategoria tipo,
+            @RequestParam(required = false) TipoCategoria tipo,
             @RequestParam Long organizacaoId) {
 
         return categoriaService.listar(tipo, organizacaoId);
@@ -51,5 +55,14 @@ public class CategoriaController {
             @RequestParam Long organizacaoId) {
 
         return categoriaService.atualizar(id, dados, organizacaoId);
+    }
+
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void excluir(
+            @PathVariable Long id,
+            @RequestParam Long organizacaoId) {
+
+        categoriaService.excluir(id, organizacaoId);
     }
 }
