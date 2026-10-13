@@ -284,21 +284,27 @@ function FornecedorPage() {
                           <Eye size={15} />
                         </button>
 
-                        <button
-                          type="button"
-                          className="pagina-fornecedor__acao pagina-fornecedor__acao--editar"
-                          title="Editar"
-                          aria-label={`Editar ${nomeFornecedor(fornecedor)}`}
-                          onClick={() =>
-                            navegar(`/fornecedores/${fornecedor.id}/editar`)
-                          }
-                        >
-                          <Pencil size={15} />
-                        </button>
+                        {ativo && (
+                          <button
+                            type="button"
+                            className="pagina-fornecedor__acao pagina-fornecedor__acao--editar"
+                            title="Editar"
+                            aria-label={`Editar ${nomeFornecedor(fornecedor)}`}
+                            onClick={() =>
+                              navegar(`/fornecedores/${fornecedor.id}/editar`)
+                            }
+                          >
+                            <Pencil size={15} />
+                          </button>
+                        )}
 
                         <button
                           type="button"
-                          className="pagina-fornecedor__acao pagina-fornecedor__acao--status"
+                          className={`pagina-fornecedor__acao pagina-fornecedor__acao--status ${
+                            ativo
+                              ? 'pagina-fornecedor__acao--inativar'
+                              : 'pagina-fornecedor__acao--reativar'
+                          }`}
                           title={ativo ? 'Inativar' : 'Reativar'}
                           aria-label={`${ativo ? 'Inativar' : 'Reativar'} ${nomeFornecedor(fornecedor)}`}
                           disabled={
