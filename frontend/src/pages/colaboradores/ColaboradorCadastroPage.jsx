@@ -129,7 +129,8 @@ function montarPayload(form) {
   const documento = soDigitos(form.documento)
 
   return {
-    tipoPessoa: form.tipoPessoa,
+    // O backend espera FISICA / JURIDICA (enum TipoPessoa), não PF / PJ.
+    tipoPessoa: ehPF ? 'FISICA' : 'JURIDICA',
     nome: form.nome.trim(),
     razaoSocial: ehPF ? null : form.razaoSocial.trim(),
     cpf: ehPF ? documento : null,

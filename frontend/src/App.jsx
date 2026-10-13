@@ -7,6 +7,8 @@ import ServicoPage from './pages/servicos/ServicoPage'
 import ServicoFormularioPage from './pages/servicos/ServicoFormularioPage'
 import FornecedorPage from './pages/fornecedor/FornecedorPage'
 import FornecedorFormularioPage from './pages/fornecedor/FornecedorFormularioPage'
+import ColaboradorPage from './pages/colaboradores/ColaboradorPage'
+import ColaboradorCadastroPage from './pages/colaboradores/ColaboradorCadastroPage'
 import PaginaEmBreve from './pages/PaginaEmBreve'
 
 function App() {
@@ -44,7 +46,8 @@ function App() {
           <Route path="/fornecedores/:id" element={<FornecedorFormularioPage modo="visualizar" />} />
 
           <Route path="/financeiro" element={<PaginaEmBreve titulo="Financeiro" />} />
-          <Route path="/rh" element={<PaginaEmBreve titulo="Recursos Humanos" />} />
+          <Route path="/rh" element={<ColaboradorPage />} />
+          <Route path="/rh/novo" element={<ColaboradorCadastroPage />} />
           <Route path="/configuracoes" element={<PaginaEmBreve titulo="Configurações" />} />
           <Route path="*" element={<PaginaEmBreve titulo="Página não encontrada" />} />
         </Route>
