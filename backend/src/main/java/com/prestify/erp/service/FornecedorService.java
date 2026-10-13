@@ -113,6 +113,12 @@ public class FornecedorService {
             .orElseThrow(() -> new IllegalArgumentException("Fornecedor não encontrado."));
     }
 
+    @Transactional
+    public void excluir(Long id, Long organizacaoId) {
+        Fornecedor fornecedor = buscarFornecedor(id, organizacaoId);
+        fornecedorRepository.delete(fornecedor);
+    }
+
     private FornecedorResponseDTO converterParaResponse(Fornecedor fornecedor) {
         return obterProcessor(fornecedor.getTipoPessoa()).converterParaResponse(fornecedor);
     }
