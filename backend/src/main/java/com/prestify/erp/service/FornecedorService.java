@@ -2,62 +2,47 @@ package com.prestify.erp.service;
 
 import com.prestify.erp.dto.fornecedor.FornecedorRequestDTO;
 import com.prestify.erp.dto.fornecedor.FornecedorResponseDTO;
-import com.prestify.erp.entity.Endereco;
 import com.prestify.erp.entity.Fornecedor;
-import com.prestify.erp.entity.FornecedorPF;
-import com.prestify.erp.entity.FornecedorPJ;
-import com.prestify.erp.repository.FornecedorPFRepository;
-import com.prestify.erp.repository.FornecedorPJRepository;
+import com.prestify.erp.enums.TipoPessoa;
+import com.prestify.erp.factory.FornecedorFactory;
 import com.prestify.erp.repository.FornecedorRepository;
+import com.prestify.erp.template.FornecedorProcessor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import java.time.LocalDate;
+import java.util.EnumMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class FornecedorService {
- 
+
     private final FornecedorRepository fornecedorRepository;
-    private final FornecedorPFRepository fornecedorPFRepository;
-    private final FornecedorPJRepository fornecedorPJRepository;
- 
+    private final Map<TipoPessoa, FornecedorFactory> factories = new EnumMap<>(TipoPessoa.class);
+    private final Map<TipoPessoa, FornecedorProcessor> processors = new EnumMap<>(TipoPessoa.class);
+
     public FornecedorService(
             FornecedorRepository fornecedorRepository,
-            FornecedorPFRepository fornecedorPFRepository,
-            FornecedorPJRepository fornecedorPJRepository) {
- 
+            List<FornecedorFactory> listaFactories,
+            List<FornecedorProcessor> listaProcessors) {
+
         this.fornecedorRepository = fornecedorRepository;
-        this.fornecedorPFRepository = fornecedorPFRepository;
-        this.fornecedorPJRepository = fornecedorPJRepository;
+        listaFactories.forEach(f -> factories.put(f.getTipoPessoa(), f));
+        listaProcessors.forEach(p -> processors.put(p.getTipoPessoa(), p));
     }
- 
+
     @Transactional
-    public FornecedorResponseDTO cadastrar(
-            FornecedorRequestDTO dados,
-            Long organizacaoId) {
- 
-        Fornecedor fornecedor;
- 
-        switch (dados.getTipoPessoa()) {
-            case FISICA -> {
-                FornecedorPF pf = new FornecedorPF();
-                preencherPessoaFisica(pf, dados, organizacaoId, null);
-                fornecedor = pf;
-            }
-            case JURIDICA -> {
-                FornecedorPJ pj = new FornecedorPJ();
-                preencherPessoaJuridica(pj, dados, organizacaoId, null);
-                fornecedor = pj;
-            }
-            default -> throw new IllegalArgumentException("Tipo de pessoa inválido.");
-        }
- 
-        fornecedor.setOrganizacaoId(organizacaoId);
-        preencherDadosComuns(fornecedor, dados);
- 
+    public FornecedorResponseDTO cadastrar(FornecedorRequestDTO dados, Long organizacaoId) {
+        TipoPessoa tipo = dados.getTipoPessoa();
+
+        // Factory Method
+        Fornecedor fornecedor = obterFactory(tipo).criar(organizacaoId);
+
+        // Template Method
+        obterProcessor(tipo).processar(fornecedor, dados, organizacaoId, null);
+
         return converterParaResponse(fornecedorRepository.save(fornecedor));
     }
- 
+
     @Transactional(readOnly = true)
     public List<FornecedorResponseDTO> listar(Long organizacaoId) {
         return fornecedorRepository
@@ -66,34 +51,29 @@ public class FornecedorService {
             .map(this::converterParaResponse)
             .toList();
     }
- 
+
     @Transactional(readOnly = true)
     public FornecedorResponseDTO buscarPorId(Long id, Long organizacaoId) {
         return converterParaResponse(buscarFornecedor(id, organizacaoId));
     }
- 
+
     @Transactional
     public FornecedorResponseDTO atualizar(
             Long id,
             FornecedorRequestDTO dados,
             Long organizacaoId) {
- 
+
         Fornecedor fornecedor = buscarFornecedor(id, organizacaoId);
- 
+
         if (fornecedor.getTipoPessoa() != dados.getTipoPessoa()) {
             throw new IllegalArgumentException(
                 "Não é possível alterar o tipo de pessoa do fornecedor."
             );
         }
- 
-        if (fornecedor instanceof FornecedorPF pf) {
-            preencherPessoaFisica(pf, dados, organizacaoId, id);
-        } else if (fornecedor instanceof FornecedorPJ pj) {
-            preencherPessoaJuridica(pj, dados, organizacaoId, id);
-        }
- 
-        preencherDadosComuns(fornecedor, dados);
- 
+
+        // Template Method
+        obterProcessor(fornecedor.getTipoPessoa()).processar(fornecedor, dados, organizacaoId, id);
+
         return converterParaResponse(fornecedorRepository.save(fornecedor));
     }
 
@@ -103,125 +83,37 @@ public class FornecedorService {
         fornecedor.setAtivo(false);
         fornecedorRepository.save(fornecedor);
     }
- 
+
     @Transactional
     public FornecedorResponseDTO reativar(Long id, Long organizacaoId) {
         Fornecedor fornecedor = buscarFornecedor(id, organizacaoId);
         fornecedor.setAtivo(true);
         return converterParaResponse(fornecedorRepository.save(fornecedor));
     }
- 
-    // ---------- PF ----------
 
-    private void preencherPessoaFisica(
-            FornecedorPF pf,
-            FornecedorRequestDTO dados,
-            Long organizacaoId,
-            Long idAtual) {
- 
-        exigirTexto(dados.getNome(), "O nome é obrigatório.");
-        exigirTexto(dados.getCpf(), "O CPF é obrigatório.");
- 
-        String cpf = somenteDigitos(dados.getCpf());
-        if (cpf.length() != 11) {
-            throw new IllegalArgumentException("CPF inválido. Deve conter 11 dígitos.");
+    private FornecedorFactory obterFactory(TipoPessoa tipo) {
+        FornecedorFactory factory = factories.get(tipo);
+        if (factory == null) {
+            throw new IllegalArgumentException("Tipo de pessoa inválido.");
         }
- 
-        boolean duplicado = (idAtual == null)
-            ? fornecedorPFRepository.existsByCpfAndOrganizacaoId(cpf, organizacaoId)
-            : fornecedorPFRepository.existsByCpfAndOrganizacaoIdAndIdNot(cpf, organizacaoId, idAtual);
- 
-        if (duplicado) {
-            throw new IllegalArgumentException("Já existe um fornecedor com esse CPF.");
-        }
- 
-        pf.setNome(dados.getNome().trim());
-        pf.setCpf(cpf);
-        pf.setDataNascimento(dados.getDataNascimento());
+        return factory;
     }
- 
-    // ---------- PJ ----------
- 
-    private void preencherPessoaJuridica(
-            FornecedorPJ pj,
-            FornecedorRequestDTO dados,
-            Long organizacaoId,
-            Long idAtual) {
- 
-        exigirTexto(dados.getRazaoSocial(), "A razão social é obrigatória.");
-        exigirTexto(dados.getCnpj(), "O CNPJ é obrigatório.");
- 
-        String cnpj = somenteDigitos(dados.getCnpj());
-        if (cnpj.length() != 14) {
-            throw new IllegalArgumentException("CNPJ inválido. Deve conter 14 dígitos.");
+
+    private FornecedorProcessor obterProcessor(TipoPessoa tipo) {
+        FornecedorProcessor processor = processors.get(tipo);
+        if (processor == null) {
+            throw new IllegalArgumentException("Tipo de pessoa inválido.");
         }
- 
-        boolean duplicado = (idAtual == null)
-            ? fornecedorPJRepository.existsByCnpjAndOrganizacaoId(cnpj, organizacaoId)
-            : fornecedorPJRepository.existsByCnpjAndOrganizacaoIdAndIdNot(cnpj, organizacaoId, idAtual);
- 
-        if (duplicado) {
-            throw new IllegalArgumentException("Já existe um fornecedor com esse CNPJ.");
-        }
- 
-        pj.setRazaoSocial(dados.getRazaoSocial().trim());
-        pj.setCnpj(cnpj);
+        return processor;
     }
- 
-    private void preencherDadosComuns(Fornecedor fornecedor, FornecedorRequestDTO dados) {
-        fornecedor.setSegmentoAtuacao(dados.getSegmentoAtuacao());
-        fornecedor.setEmail(dados.getEmail());
-        fornecedor.setTelefone(dados.getTelefone());
-        fornecedor.setEndereco(
-            dados.getEndereco() != null ? dados.getEndereco() : new Endereco()
-        );
-    }
- 
+
     private Fornecedor buscarFornecedor(Long id, Long organizacaoId) {
         return fornecedorRepository
             .findByIdAndOrganizacaoId(id, organizacaoId)
             .orElseThrow(() -> new IllegalArgumentException("Fornecedor não encontrado."));
     }
- 
-    private void exigirTexto(String valor, String mensagem) {
-        if (valor == null || valor.isBlank()) {
-            throw new IllegalArgumentException(mensagem);
-        }
-    }
- 
-    private String somenteDigitos(String valor) {
-        return valor.replaceAll("\\D", "");
-    }
- 
+
     private FornecedorResponseDTO converterParaResponse(Fornecedor fornecedor) {
-        String nome = null;
-        String cpf = null;
-        LocalDate dataNascimento = null;
-        String razaoSocial = null;
-        String cnpj = null;
- 
-        if (fornecedor instanceof FornecedorPF pf) {
-            nome = pf.getNome();
-            cpf = pf.getCpf();
-            dataNascimento = pf.getDataNascimento();
-        } else if (fornecedor instanceof FornecedorPJ pj) {
-            razaoSocial = pj.getRazaoSocial();
-            cnpj = pj.getCnpj();
-        }
- 
-        return new FornecedorResponseDTO(
-            fornecedor.getId(),
-            fornecedor.getTipoPessoa(),
-            nome,
-            cpf,
-            dataNascimento,
-            razaoSocial,
-            cnpj,
-            fornecedor.getSegmentoAtuacao(),
-            fornecedor.getEmail(),
-            fornecedor.getTelefone(),
-            fornecedor.getEndereco(),
-            fornecedor.isAtivo()
-        );
+        return obterProcessor(fornecedor.getTipoPessoa()).converterParaResponse(fornecedor);
     }
 }
