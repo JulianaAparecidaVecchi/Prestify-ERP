@@ -22,7 +22,7 @@ const FORM_VAZIO = {
   segmentoAtuacao: '',
   endereco: {
     cep: '',
-    rua: '',
+    logradouro: '',
     numero: '',
     complemento: '',
     bairro: '',
@@ -64,10 +64,6 @@ function FornecedorFormularioPage({ modo = 'criar' }) {
           endereco: {
             ...FORM_VAZIO.endereco,
             ...(fornecedor.endereco || {}),
-            rua:
-              fornecedor.endereco?.rua ??
-              fornecedor.endereco?.logradouro ??
-              '',
           },
         })
       } catch (e) {
@@ -136,7 +132,7 @@ function FornecedorFormularioPage({ modo = 'criar' }) {
 
     if (
       !dados.endereco.cep.trim() ||
-      !dados.endereco.rua.trim() ||
+      !dados.endereco.logradouro.trim() ||
       !dados.endereco.numero.trim() ||
       !dados.endereco.bairro.trim() ||
       !dados.endereco.cidade.trim() ||
@@ -157,6 +153,9 @@ function FornecedorFormularioPage({ modo = 'criar' }) {
         ? dados.razaoSocial.trim()
         : null,
       cnpj: dados.tipoPessoa === 'JURIDICA' ? dados.cnpj : null,
+      endereco: {
+        ...dados.endereco,
+      },
     }
 
     setSalvando(true)
@@ -359,8 +358,8 @@ function FornecedorFormularioPage({ modo = 'criar' }) {
 
             <Campo
               label="Rua"
-              name="rua"
-              value={dados.endereco.rua}
+              name="logradouro"
+              value={dados.endereco.logradouro}
               onChange={alterarEndereco}
               placeholder="Digite o nome da rua"
               required

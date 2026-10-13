@@ -63,4 +63,13 @@ public class FornecedorController {
  
         return fornecedorService.reativar(id, organizacaoId);
     }
+
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void excluir(
+            @PathVariable Long id,
+            @RequestParam Long organizacaoId) {
+
+        fornecedorService.excluir(id, organizacaoId);
+    }
 }
