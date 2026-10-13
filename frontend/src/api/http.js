@@ -68,4 +68,7 @@ export const http = {
     requisitar(caminho, { method: 'PUT', body: JSON.stringify(dados) }),
 
   delete: (caminho) => requisitar(caminho, { method: 'DELETE' }),
+
+  patch: (caminho) =>
+    requisitar(caminho, { method: 'PATCH' }),
 }

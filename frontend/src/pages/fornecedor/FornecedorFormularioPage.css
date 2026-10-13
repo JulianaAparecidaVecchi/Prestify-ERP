@@ -1,0 +1,244 @@
+.formulario-fornecedor {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  min-width: 0;
+  color: #111;
+}
+
+.formulario-fornecedor__voltar {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  align-self: flex-start;
+  margin: 0 0 16px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: #5434b2;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.formulario-fornecedor__cabecalho {
+  margin: 0 0 28px;
+  padding-left: 2px;
+}
+
+.formulario-fornecedor__cabecalho h1 {
+  margin: 0 0 5px;
+  color: #080808;
+  font-size: 27px;
+  line-height: 1.2;
+  font-weight: 750;
+}
+
+.formulario-fornecedor__cabecalho p {
+  margin: 0;
+  color: #333;
+  font-size: 13px;
+}
+
+.formulario-fornecedor__cartao {
+  margin: 0 0 20px;
+  padding: 16px 19px 19px;
+  border-radius: 12px;
+  background: #f8f8f8;
+  box-shadow: 0 2px 5px #0000001c;
+}
+
+.formulario-fornecedor__cartao h2 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 12px;
+  color: #111;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.formulario-fornecedor__icone {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 23px;
+  height: 23px;
+  border: 1px solid #d3c5fa;
+  border-radius: 5px;
+  background: #e9e1ff;
+  color: #5936b5;
+}
+
+.formulario-fornecedor__tipo {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px 20px;
+  margin-bottom: 18px;
+  font-size: 12px;
+}
+
+.formulario-fornecedor__tipo > span {
+  flex-basis: 100%;
+  font-weight: 650;
+}
+
+.formulario-fornecedor__tipo label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 400;
+  cursor: pointer;
+}
+
+.formulario-fornecedor__tipo input {
+  width: 15px;
+  height: 15px;
+  margin: 0;
+  accent-color: #5935b2;
+}
+
+.formulario-fornecedor__campo b,
+.formulario-fornecedor__tipo b {
+  color: #e33a32;
+}
+
+.formulario-fornecedor__grade {
+  display: grid;
+  grid-template-columns: 1.1fr 0.8fr 0.8fr;
+  gap: 16px;
+  align-items: start;
+}
+
+.formulario-fornecedor__campo {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+  color: #111;
+  font-size: 12px;
+  font-weight: 650;
+}
+
+.formulario-fornecedor__campo > span {
+  line-height: 1.2;
+}
+
+.formulario-fornecedor__campo input,
+.formulario-fornecedor__campo select {
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  height: 30px;
+  padding: 6px 9px;
+  border: 1px solid #bdbdbd;
+  border-radius: 4px;
+  outline: none;
+  background: #f9f9f9;
+  color: #222;
+  font: inherit;
+  font-weight: 400;
+}
+
+.formulario-fornecedor__campo input::placeholder {
+  color: #b7b7b7;
+  font-weight: 400;
+}
+
+.formulario-fornecedor__campo input:focus,
+.formulario-fornecedor__campo select:focus {
+  border-color: #6741bd;
+  box-shadow: 0 0 0 2px #6741bd20;
+}
+
+.formulario-fornecedor__campo input:disabled,
+.formulario-fornecedor__campo select:disabled {
+  opacity: 0.8;
+}
+
+.formulario-fornecedor__grade-endereco {
+  display: grid;
+  grid-template-columns: 0.75fr 1.4fr 0.65fr 1fr;
+  gap: 16px;
+  align-items: start;
+}
+
+.formulario-fornecedor__grade-endereco > :nth-child(5) {
+  grid-column: span 1;
+}
+
+.formulario-fornecedor__grade-endereco > :nth-child(6) {
+  grid-column: span 1;
+}
+
+.formulario-fornecedor__acoes {
+  display: flex;
+  justify-content: center;
+  margin: 4px 0 12px;
+}
+
+.formulario-fornecedor__submit {
+  min-width: 158px;
+  min-height: 41px;
+  padding: 0 30px;
+  border: 0;
+  border-radius: 10px;
+  background: #5532ad;
+  color: #fff;
+  font-size: 18px;
+  font-weight: 500;
+  cursor: pointer;
+  box-shadow: 0 3px 4px #00000030;
+}
+
+.formulario-fornecedor__submit:hover {
+  background: #452692;
+}
+
+.formulario-fornecedor__submit:disabled {
+  opacity: 0.7;
+  cursor: wait;
+}
+
+.formulario-fornecedor__erro {
+  padding: 10px 12px;
+  margin: 0 0 14px;
+  border-radius: 6px;
+  background: #fde8e7;
+  color: #9b1c17;
+  font-size: 13px;
+}
+
+@media (max-width: 900px) {
+  .formulario-fornecedor__grade {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .formulario-fornecedor__grade-endereco {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 560px) {
+  .formulario-fornecedor__cabecalho h1 {
+    font-size: 23px;
+  }
+
+  .formulario-fornecedor__cartao {
+    padding: 14px;
+  }
+
+  .formulario-fornecedor__grade,
+  .formulario-fornecedor__grade-endereco {
+    grid-template-columns: 1fr;
+  }
+
+  .formulario-fornecedor__acoes {
+    margin-top: 15px;
+  }
+
+  .formulario-fornecedor__submit {
+    width: 100%;
+  }
+}
