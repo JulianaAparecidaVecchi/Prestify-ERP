@@ -1,0 +1,46 @@
+.formulario-servico{display:flex;flex-direction:column;width:100%;min-width:0;gap:0;color:#111;}
+.formulario-servico__voltar{display:inline-flex;align-items:center;gap:6px;align-self:flex-start;padding:0;margin:0 0 16px;border:0;background:transparent;color:#5434b2;font-size:14px;font-weight:500;cursor:pointer}
+.formulario-servico__cabecalho{margin:0 0 28px 0;padding-left:2px}
+.formulario-servico__cabecalho h1{margin:0 0 5px;font-size:27px;line-height:1.2;font-weight:750;color:#080808}
+.formulario-servico__cabecalho p{margin:0;color:#333;font-size:13px}
+.formulario-servico form{display:flex;flex-direction:column;gap:0;}
+.formulario-servico__cartao{padding:16px 19px 19px;margin:0 0 2px;border-radius:12px;background:#f8f8f8;box-shadow:0 2px 5px #0000001c;}
+.formulario-servico__cartao h2{display:flex;align-items:center;gap:8px;margin:0 0 12px;font-size:14px;font-weight:700;color:#111}
+.formulario-servico__icone{display:inline-flex;align-items:center;justify-content:center;width:23px;height:23px;border:1px solid #d3c5fa;border-radius:5px;background:#e9e1ff;color:#5936b5}
+.formulario-servico__grade-basica{display:grid;grid-template-columns:1.1fr .8fr .8fr;gap:14px 16px;align-items:start}
+.formulario-servico__campo{display:flex;flex-direction:column;gap:6px;min-width:0;font-size:12px;font-weight:650;color:#111}
+.formulario-servico__campo>span{line-height:1.2}
+.formulario-servico__campo b,.formulario-servico__tipo-preco b{color:#e33a32}
+.formulario-servico__campo small{font-size:10px;font-weight:400;color:#777;line-height:1.25}
+.formulario-servico__campo input,.formulario-servico__campo select,.formulario-servico__campo textarea{box-sizing:border-box;width:100%;min-width:0;height:30px;padding:6px 9px;border:1px solid #bdbdbd;border-radius:4px;background:#f9f9f9;color:#222;font:400 12px inherit;outline:none}
+.formulario-servico__campo textarea{height:58px;resize:vertical;min-height:58px}
+.formulario-servico__campo input::placeholder,.formulario-servico__campo textarea::placeholder{color:#b7b7b7}
+.formulario-servico__campo input:focus,.formulario-servico__campo select:focus,.formulario-servico__campo textarea:focus{border-color:#6741bd;box-shadow:0 0 0 2px #6741bd20}
+.formulario-servico__campo input:disabled,.formulario-servico__campo select:disabled,.formulario-servico__campo textarea:disabled{opacity:.8}
+.formulario-servico__campo--largo{grid-column:1/-1}
+.formulario-servico__campo small{margin-top:0}
+.formulario-servico__cartao--detalhes{padding-bottom:19px}
+.formulario-servico__grade-detalhes{display:grid;grid-template-columns:1fr 1.2fr 1fr;gap:16px;align-items:start}
+.formulario-servico__tipo-preco{display:flex;flex-wrap:wrap;align-items:center;gap:12px 16px;min-width:0;margin:0;padding:0;border:0}
+.formulario-servico__tipo-preco legend{padding:0;margin-bottom:10px;font-size:12px;font-weight:650}
+.formulario-servico__tipo-preco label{display:inline-flex;align-items:center;gap:5px;white-space:nowrap;font-size:12px;font-weight:400}
+.formulario-servico__tipo-preco input{width:16px;height:16px;margin:0;accent-color:#5935b2}
+.formulario-servico__preco{display:flex;height:30px;border:1px solid #bdbdbd;border-radius:4px;overflow:hidden;background:#f9f9f9}
+.formulario-servico__preco>span{display:flex;align-items:center;padding:0 8px;background:#eee;border-right:1px solid #bdbdbd;color:#777;font-size:12px;font-weight:400}
+.formulario-servico__campo .formulario-servico__preco input{height:28px;border:0;border-radius:0;background:transparent;box-shadow:none}
+.formulario-servico__campo--preco-variacao p{margin:0;color:#777;font-size:11px;font-weight:400;line-height:1.4}
+.formulario-servico__adicionar-variacao{display:grid;grid-template-columns:minmax(150px,1fr) minmax(120px,.7fr) auto;gap:14px;align-items:end;margin-top:17px;max-width:700px}
+.formulario-servico__adicionar-botao{display:inline-flex;align-items:center;justify-content:center;gap:5px;min-height:33px;padding:0 12px;border:1px solid #c9b9f2;border-radius:10px;background:#fff;color:#6846bc;font-size:12px;cursor:pointer;box-shadow:0 2px 3px #0000000d;white-space:nowrap}
+.formulario-servico__adicionar-botao:hover{background:#f2edff}
+.formulario-servico__lista-variacoes{padding:15px 19px 5px}
+.formulario-servico__lista-variacoes h3{margin:0 0 13px;color:#555;font-size:12px;font-weight:700}
+.formulario-servico__lista-variacoes>p{margin:0;color:#999;font-size:12px}
+.formulario-servico__tabela-variacoes{display:flex;flex-direction:column;gap:0}
+.formulario-servico__linha-variacao{display:grid;grid-template-columns:1fr auto 32px;align-items:center;gap:15px;padding:10px 12px;border-bottom:1px solid #e6e2ed;font-size:12px}
+.formulario-servico__linha-variacao>div{display:flex;flex-direction:column;gap:3px}.formulario-servico__linha-variacao small{color:#777;font-weight:400}.formulario-servico__linha-variacao>button{display:flex;align-items:center;justify-content:center;border:0;background:transparent;color:#b42318;cursor:pointer}
+.formulario-servico__acoes{display:flex;justify-content:center;margin:35px 0 12px}
+.formulario-servico__submit{min-width:158px;min-height:41px;padding:0 30px;border:0;border-radius:10px;background:#5532ad;color:#fff;font-size:18px;font-weight:500;cursor:pointer;box-shadow:0 3px 4px #00000030}
+.formulario-servico__submit:hover{background:#452692}.formulario-servico__submit:disabled{opacity:.7;cursor:wait}
+.formulario-servico__erro{padding:10px 12px;margin:0 0 14px;border-radius:6px;background:#fde8e7;color:#9b1c17;font-size:13px}
+@media(max-width:900px){.formulario-servico__grade-basica{grid-template-columns:repeat(2,minmax(0,1fr))}.formulario-servico__grade-detalhes{grid-template-columns:repeat(2,minmax(0,1fr))}.formulario-servico__tipo-preco{grid-column:1/-1;grid-row:1}.formulario-servico__adicionar-variacao{grid-template-columns:1fr 1fr}.formulario-servico__adicionar-botao{grid-column:1/-1;justify-self:start}}
+@media(max-width:560px){.formulario-servico__cabecalho h1{font-size:23px}.formulario-servico__cartao{padding:14px}.formulario-servico__grade-basica,.formulario-servico__grade-detalhes,.formulario-servico__adicionar-variacao{grid-template-columns:1fr}.formulario-servico__campo--largo{grid-column:auto}.formulario-servico__tipo-preco{grid-column:auto;grid-row:auto}.formulario-servico__tipo-preco label{white-space:normal}.formulario-servico__adicionar-botao{grid-column:auto}.formulario-servico__acoes{margin-top:25px}.formulario-servico__submit{width:100%}}
