@@ -6,6 +6,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import com.prestify.erp.controller.ColaboradorController;
 import com.prestify.erp.exception.ColaboradorExceptions.ColaboradorNaoEncontradoException;
 import com.prestify.erp.exception.ColaboradorExceptions.DadosInvalidosException;
 import com.prestify.erp.exception.ColaboradorExceptions.EmailJaCadastradoException;
@@ -15,7 +16,7 @@ import static com.prestify.erp.exception.ColaboradorExceptions.*;
 import java.util.Map;
 
 /** Mesmo formato do CategoriaExceptionHandler: {"mensagem": "..."} (fluxo E6 do UC6). */
-@RestControllerAdvice(basePackages = "com.prestify.erp.colaborador")
+@RestControllerAdvice(assignableTypes = ColaboradorController.class)
 public class ColaboradorExceptionHandler {
 
     @ExceptionHandler(EmailJaCadastradoException.class)
