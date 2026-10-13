@@ -1,5 +1,5 @@
-import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useEffect, useRef, useState } from 'react'
+import { useNavigate, useParams } from 'react-router-dom'
 import { ArrowLeft, Eye, EyeOff, MapPin, UserRound } from 'lucide-react'
 
 import { colaboradorService } from '../../services/colaboradorService'
@@ -82,7 +82,39 @@ function formatarCep(valor) {
   return d.length > 5 ? `${d.slice(0, 5)}-${d.slice(5)}` : d
 }
 
-function validar(form) {
+// Converte a resposta do backend (ColaboradorResponseDTO) para o formato do formulário.
+function paraFormulario(dados) {
+  const ehPF = dados.tipoPessoa !== 'JURIDICA'
+  const endereco = dados.endereco ?? {}
+
+  return {
+    ...FORMULARIO_INICIAL,
+    tipoPessoa: ehPF ? 'PF' : 'PJ',
+    nome: dados.nome ?? '',
+    razaoSocial: dados.razaoSocial ?? '',
+    documento: ehPF
+      ? formatarCpf(dados.documento ?? '')
+      : formatarCnpj(dados.documento ?? ''),
+    dataNascimento: dados.dataNascimento ?? '',
+    dataAdmissao: dados.dataAdmissao ?? '',
+    dataAbertura: dados.dataAbertura ?? '',
+    genero: dados.genero ?? 'FEMININO',
+    email: dados.email ?? '',
+    telefone: formatarTelefone(dados.telefone ?? ''),
+    senha: '', // o backend nunca devolve a senha
+    funcao: dados.funcao ?? '',
+    salario: dados.salario != null ? String(dados.salario) : '',
+    cep: formatarCep(endereco.cep ?? ''),
+    logradouro: endereco.logradouro ?? '',
+    numero: endereco.numero ?? '',
+    complemento: endereco.complemento ?? '',
+    bairro: endereco.bairro ?? '',
+    cidade: endereco.cidade ?? '',
+    estado: endereco.estado ?? '',
+  }
+}
+
+function validar(form, editando) {
   const erros = {}
   const ehPF = form.tipoPessoa === 'PF'
 
@@ -108,7 +140,10 @@ function validar(form) {
   const digitosTelefone = soDigitos(form.telefone).length
   if (digitosTelefone < 10 || digitosTelefone > 11) erros.telefone = 'Informe DDD + número.'
 
-  if (form.senha.length < 8) erros.senha = 'A senha deve ter ao menos 8 caracteres.'
+  // No cadastro a senha é obrigatória. Na edição, só valida se o usuário digitou algo.
+  if (form.senha.length < 8 && (!editando || form.senha.length > 0)) {
+    erros.senha = 'A senha deve ter ao menos 8 caracteres.'
+  }
 
   if (!form.funcao) erros.funcao = 'Selecione a função.'
 
@@ -141,7 +176,8 @@ function montarPayload(form) {
     genero: ehPF ? form.genero : null,
     email: form.email.trim(),
     telefone: soDigitos(form.telefone),
-    senha: form.senha,
+    // Senha vazia vira null: na edição o backend mantém a senha atual.
+    senha: form.senha ? form.senha : null,
     funcao: form.funcao,
     salario: Number(form.salario),
     endereco: {
@@ -169,16 +205,53 @@ function Campo({ id, rotulo, obrigatorio = true, erro, children }) {
   )
 }
 
-function ColaboradorCadastroPage() {
+function ColaboradorCadastroPage({ modo = 'criar' }) {
   const navigate = useNavigate()
+  const { id } = useParams()
+  const editando = modo === 'editar'
 
   const [form, setForm] = useState(FORMULARIO_INICIAL)
   const [erros, setErros] = useState({})
   const [mostrarSenha, setMostrarSenha] = useState(false)
   const [enviando, setEnviando] = useState(false)
   const [mensagem, setMensagem] = useState(null)
+  const [carregando, setCarregando] = useState(editando)
+  const [erroCarga, setErroCarga] = useState(false)
+
+  // CEP carregado do backend: evita sobrescrever a rua ao sair do campo sem alterar o CEP.
+  const cepOriginal = useRef('')
 
   const ehPF = form.tipoPessoa === 'PF'
+
+  useEffect(() => {
+    if (!editando) return undefined
+
+    let cancelado = false
+
+    async function carregar() {
+      setCarregando(true)
+      setErroCarga(false)
+      try {
+        const dados = await colaboradorService.buscarPorId(id, ORGANIZACAO_ID_TEMPORARIO)
+        if (cancelado) return
+        const formulario = paraFormulario(dados)
+        cepOriginal.current = formulario.cep
+        setForm(formulario)
+      } catch (erro) {
+        if (cancelado) return
+        setErroCarga(true)
+        setMensagem({ tipo: 'erro', texto: extrairMensagemErro(erro) })
+      } finally {
+        if (!cancelado) setCarregando(false)
+      }
+    }
+
+    carregar()
+
+    return () => {
+      cancelado = true
+    }
+  }, [editando, id])
 
   function atualizar(campo, valor) {
     setForm((atual) => ({ ...atual, [campo]: valor }))
@@ -218,11 +291,17 @@ function ColaboradorCadastroPage() {
     }
   }
 
+  function aoSairDoCep(valor) {
+    // Na edição, só consulta o ViaCEP se o CEP foi realmente alterado.
+    if (editando && formatarCep(valor) === cepOriginal.current) return
+    buscarCep(valor)
+  }
+
   async function handleSubmit(evento) {
     evento.preventDefault()
     setMensagem(null)
 
-    const errosValidacao = validar(form)
+    const errosValidacao = validar(form, editando)
     if (Object.keys(errosValidacao).length > 0) {
       setErros(errosValidacao)
       setMensagem({ tipo: 'erro', texto: 'Corrija os campos destacados para continuar.' })
@@ -231,6 +310,16 @@ function ColaboradorCadastroPage() {
 
     setEnviando(true)
     try {
+      if (editando) {
+        await colaboradorService.atualizar(
+          id,
+          montarPayload(form),
+          ORGANIZACAO_ID_TEMPORARIO,
+        )
+        navigate('/rh')
+        return
+      }
+
       await colaboradorService.cadastrar(montarPayload(form), ORGANIZACAO_ID_TEMPORARIO)
       setMensagem({ tipo: 'sucesso', texto: 'Colaborador cadastrado com sucesso!' })
       setForm(FORMULARIO_INICIAL)
@@ -254,8 +343,12 @@ function ColaboradorCadastroPage() {
       </button>
 
       <header className="colaborador-cadastro__cabecalho">
-        <h2>Cadastro de Colaborador</h2>
-        <p>Preencha as informações do novo colaborador abaixo</p>
+        <h2>{editando ? 'Editar Colaborador' : 'Cadastro de Colaborador'}</h2>
+        <p>
+          {editando
+            ? 'Altere as informações do colaborador abaixo'
+            : 'Preencha as informações do novo colaborador abaixo'}
+        </p>
       </header>
 
       {mensagem && (
@@ -267,183 +360,177 @@ function ColaboradorCadastroPage() {
         </div>
       )}
 
-      <form onSubmit={handleSubmit} noValidate>
-        {/* ---------------- Informações básicas ---------------- */}
-        <fieldset className="colaborador-cadastro__secao">
-          <legend>
-            <UserRound size={16} />
-            Informações básicas
-          </legend>
+      {carregando && <p>Carregando colaborador...</p>}
 
-          <div className="colaborador-cadastro__grade">
-            <div className="colaborador-cadastro__campo">
-              <span className="colaborador-cadastro__rotulo">
-                Tipo de colaborador
-                <span className="colaborador-cadastro__obrigatorio"> *</span>
-              </span>
-              <div className="colaborador-cadastro__opcoes">
-                <label>
-                  <input
-                    type="radio"
-                    name="tipoPessoa"
-                    checked={ehPF}
-                    onChange={() => trocarTipo('PF')}
-                  />
-                  Pessoa física
-                </label>
-                <label>
-                  <input
-                    type="radio"
-                    name="tipoPessoa"
-                    checked={!ehPF}
-                    onChange={() => trocarTipo('PJ')}
-                  />
-                  Pessoa jurídica
-                </label>
+      {!carregando && !erroCarga && (
+        <form onSubmit={handleSubmit} noValidate>
+          {/* ---------------- Informações básicas ---------------- */}
+          <fieldset className="colaborador-cadastro__secao">
+            <legend>
+              <UserRound size={16} />
+              Informações básicas
+            </legend>
+
+            <div className="colaborador-cadastro__grade">
+              <div className="colaborador-cadastro__campo">
+                <span className="colaborador-cadastro__rotulo">
+                  Tipo de colaborador
+                  <span className="colaborador-cadastro__obrigatorio"> *</span>
+                </span>
+                <div className="colaborador-cadastro__opcoes">
+                  <label>
+                    <input
+                      type="radio"
+                      name="tipoPessoa"
+                      checked={ehPF}
+                      disabled={editando}
+                      onChange={() => trocarTipo('PF')}
+                    />
+                    Pessoa física
+                  </label>
+                  <label>
+                    <input
+                      type="radio"
+                      name="tipoPessoa"
+                      checked={!ehPF}
+                      disabled={editando}
+                      onChange={() => trocarTipo('PJ')}
+                    />
+                    Pessoa jurídica
+                  </label>
+                </div>
               </div>
-            </div>
 
-            <Campo id="senha" rotulo="Senha do colaborador" erro={erros.senha}>
-              <div className="colaborador-cadastro__senha">
-                <input
-                  id="senha"
-                  type={mostrarSenha ? 'text' : 'password'}
-                  autoComplete="new-password"
-                  placeholder="Digite uma senha"
-                  value={form.senha}
-                  onChange={(e) => atualizar('senha', e.target.value)}
-                  aria-invalid={Boolean(erros.senha)}
-                />
-                <button
-                  type="button"
-                  onClick={() => setMostrarSenha((atual) => !atual)}
-                  aria-label={mostrarSenha ? 'Ocultar senha' : 'Mostrar senha'}
-                >
-                  {mostrarSenha ? <EyeOff size={16} /> : <Eye size={16} />}
-                </button>
-              </div>
-            </Campo>
-
-            <Campo id="funcao" rotulo="Função" erro={erros.funcao}>
-              <select
-                id="funcao"
-                value={form.funcao}
-                onChange={(e) => atualizar('funcao', e.target.value)}
-                aria-invalid={Boolean(erros.funcao)}
+              <Campo
+                id="senha"
+                rotulo="Senha do colaborador"
+                obrigatorio={!editando}
+                erro={erros.senha}
               >
-                <option value="">Selecione a função</option>
-                {FUNCOES.map((funcao) => (
-                  <option key={funcao.valor} value={funcao.valor}>
-                    {funcao.rotulo}
-                  </option>
-                ))}
-              </select>
-            </Campo>
+                <div className="colaborador-cadastro__senha">
+                  <input
+                    id="senha"
+                    type={mostrarSenha ? 'text' : 'password'}
+                    autoComplete="new-password"
+                    placeholder={editando ? 'Deixe em branco para manter a atual' : 'Digite uma senha'}
+                    value={form.senha}
+                    onChange={(e) => atualizar('senha', e.target.value)}
+                    aria-invalid={Boolean(erros.senha)}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setMostrarSenha((atual) => !atual)}
+                    aria-label={mostrarSenha ? 'Ocultar senha' : 'Mostrar senha'}
+                  >
+                    {mostrarSenha ? <EyeOff size={16} /> : <Eye size={16} />}
+                  </button>
+                </div>
+              </Campo>
 
-            <Campo
-              id="nome"
-              rotulo={ehPF ? 'Nome completo' : 'Nome fantasia'}
-              erro={erros.nome}
-            >
-              <input
+              <Campo id="funcao" rotulo="Função" erro={erros.funcao}>
+                <select
+                  id="funcao"
+                  value={form.funcao}
+                  onChange={(e) => atualizar('funcao', e.target.value)}
+                  aria-invalid={Boolean(erros.funcao)}
+                >
+                  <option value="">Selecione a função</option>
+                  {FUNCOES.map((funcao) => (
+                    <option key={funcao.valor} value={funcao.valor}>
+                      {funcao.rotulo}
+                    </option>
+                  ))}
+                </select>
+              </Campo>
+
+              <Campo
                 id="nome"
-                type="text"
-                placeholder={ehPF ? 'Digite o nome completo' : 'Digite o nome fantasia'}
-                value={form.nome}
-                onChange={(e) => atualizar('nome', e.target.value)}
-                aria-invalid={Boolean(erros.nome)}
-              />
-            </Campo>
-
-            <Campo id="documento" rotulo={ehPF ? 'CPF' : 'CNPJ'} erro={erros.documento}>
-              <input
-                id="documento"
-                type="text"
-                inputMode="numeric"
-                placeholder={ehPF ? '000.000.000-00' : '00.000.000/0000-00'}
-                value={form.documento}
-                onChange={(e) =>
-                  atualizar(
-                    'documento',
-                    ehPF ? formatarCpf(e.target.value) : formatarCnpj(e.target.value),
-                  )
-                }
-                aria-invalid={Boolean(erros.documento)}
-              />
-            </Campo>
-
-            {ehPF ? (
-              <Campo id="dataNascimento" rotulo="Data de nascimento" erro={erros.dataNascimento}>
+                rotulo={ehPF ? 'Nome completo' : 'Nome fantasia'}
+                erro={erros.nome}
+              >
                 <input
-                  id="dataNascimento"
-                  type="date"
-                  value={form.dataNascimento}
-                  onChange={(e) => atualizar('dataNascimento', e.target.value)}
-                  aria-invalid={Boolean(erros.dataNascimento)}
+                  id="nome"
+                  type="text"
+                  placeholder={ehPF ? 'Digite o nome completo' : 'Digite o nome fantasia'}
+                  value={form.nome}
+                  onChange={(e) => atualizar('nome', e.target.value)}
+                  aria-invalid={Boolean(erros.nome)}
                 />
               </Campo>
-            ) : (
-              <Campo id="dataAbertura" rotulo="Data de criação" erro={erros.dataAbertura}>
+
+              <Campo id="documento" rotulo={ehPF ? 'CPF' : 'CNPJ'} erro={erros.documento}>
                 <input
-                  id="dataAbertura"
-                  type="date"
-                  value={form.dataAbertura}
-                  onChange={(e) => atualizar('dataAbertura', e.target.value)}
-                  aria-invalid={Boolean(erros.dataAbertura)}
+                  id="documento"
+                  type="text"
+                  inputMode="numeric"
+                  placeholder={ehPF ? '000.000.000-00' : '00.000.000/0000-00'}
+                  value={form.documento}
+                  onChange={(e) =>
+                    atualizar(
+                      'documento',
+                      ehPF ? formatarCpf(e.target.value) : formatarCnpj(e.target.value),
+                    )
+                  }
+                  aria-invalid={Boolean(erros.documento)}
                 />
               </Campo>
-            )}
 
-            <Campo id="email" rotulo="E-mail" erro={erros.email}>
-              <input
-                id="email"
-                type="email"
-                placeholder="exemplo@email.com"
-                value={form.email}
-                onChange={(e) => atualizar('email', e.target.value)}
-                aria-invalid={Boolean(erros.email)}
-              />
-            </Campo>
+              {ehPF ? (
+                <Campo id="dataNascimento" rotulo="Data de nascimento" erro={erros.dataNascimento}>
+                  <input
+                    id="dataNascimento"
+                    type="date"
+                    value={form.dataNascimento}
+                    onChange={(e) => atualizar('dataNascimento', e.target.value)}
+                    aria-invalid={Boolean(erros.dataNascimento)}
+                  />
+                </Campo>
+              ) : (
+                <Campo id="dataAbertura" rotulo="Data de criação" erro={erros.dataAbertura}>
+                  <input
+                    id="dataAbertura"
+                    type="date"
+                    value={form.dataAbertura}
+                    onChange={(e) => atualizar('dataAbertura', e.target.value)}
+                    aria-invalid={Boolean(erros.dataAbertura)}
+                  />
+                </Campo>
+              )}
 
-            <Campo id="telefone" rotulo="Telefone" erro={erros.telefone}>
-              <input
-                id="telefone"
-                type="tel"
-                inputMode="numeric"
-                placeholder="(00) 00000-0000"
-                value={form.telefone}
-                onChange={(e) => atualizar('telefone', formatarTelefone(e.target.value))}
-                aria-invalid={Boolean(erros.telefone)}
-              />
-            </Campo>
-
-            {ehPF ? (
-              <Campo id="dataAdmissao" rotulo="Data de admissão" erro={erros.dataAdmissao}>
+              <Campo id="email" rotulo="E-mail" erro={erros.email}>
                 <input
-                  id="dataAdmissao"
-                  type="date"
-                  value={form.dataAdmissao}
-                  onChange={(e) => atualizar('dataAdmissao', e.target.value)}
-                  aria-invalid={Boolean(erros.dataAdmissao)}
+                  id="email"
+                  type="email"
+                  placeholder="exemplo@email.com"
+                  value={form.email}
+                  onChange={(e) => atualizar('email', e.target.value)}
+                  aria-invalid={Boolean(erros.email)}
                 />
               </Campo>
-            ) : (
-              <Campo id="salario" rotulo="Salário" erro={erros.salario}>
+
+              <Campo id="telefone" rotulo="Telefone" erro={erros.telefone}>
                 <input
-                  id="salario"
-                  type="number"
-                  min="0"
-                  step="0.01"
-                  placeholder="R$ 0,00"
-                  value={form.salario}
-                  onChange={(e) => atualizar('salario', e.target.value)}
-                  aria-invalid={Boolean(erros.salario)}
+                  id="telefone"
+                  type="tel"
+                  inputMode="numeric"
+                  placeholder="(00) 00000-0000"
+                  value={form.telefone}
+                  onChange={(e) => atualizar('telefone', formatarTelefone(e.target.value))}
+                  aria-invalid={Boolean(erros.telefone)}
                 />
               </Campo>
-            )}
 
-            {ehPF ? (
-              <>
+              {ehPF ? (
+                <Campo id="dataAdmissao" rotulo="Data de admissão" erro={erros.dataAdmissao}>
+                  <input
+                    id="dataAdmissao"
+                    type="date"
+                    value={form.dataAdmissao}
+                    onChange={(e) => atualizar('dataAdmissao', e.target.value)}
+                    aria-invalid={Boolean(erros.dataAdmissao)}
+                  />
+                </Campo>
+              ) : (
                 <Campo id="salario" rotulo="Salário" erro={erros.salario}>
                   <input
                     id="salario"
@@ -456,154 +543,173 @@ function ColaboradorCadastroPage() {
                     aria-invalid={Boolean(erros.salario)}
                   />
                 </Campo>
+              )}
 
-                <div className="colaborador-cadastro__campo">
-                  <span className="colaborador-cadastro__rotulo">
-                    Gênero
-                    <span className="colaborador-cadastro__obrigatorio"> *</span>
-                  </span>
-                  <div className="colaborador-cadastro__opcoes">
-                    <label>
-                      <input
-                        type="radio"
-                        name="genero"
-                        checked={form.genero === 'MASCULINO'}
-                        onChange={() => atualizar('genero', 'MASCULINO')}
-                      />
-                      Masculino
-                    </label>
-                    <label>
-                      <input
-                        type="radio"
-                        name="genero"
-                        checked={form.genero === 'FEMININO'}
-                        onChange={() => atualizar('genero', 'FEMININO')}
-                      />
-                      Feminino
-                    </label>
+              {ehPF ? (
+                <>
+                  <Campo id="salario" rotulo="Salário" erro={erros.salario}>
+                    <input
+                      id="salario"
+                      type="number"
+                      min="0"
+                      step="0.01"
+                      placeholder="R$ 0,00"
+                      value={form.salario}
+                      onChange={(e) => atualizar('salario', e.target.value)}
+                      aria-invalid={Boolean(erros.salario)}
+                    />
+                  </Campo>
+
+                  <div className="colaborador-cadastro__campo">
+                    <span className="colaborador-cadastro__rotulo">
+                      Gênero
+                      <span className="colaborador-cadastro__obrigatorio"> *</span>
+                    </span>
+                    <div className="colaborador-cadastro__opcoes">
+                      <label>
+                        <input
+                          type="radio"
+                          name="genero"
+                          checked={form.genero === 'MASCULINO'}
+                          onChange={() => atualizar('genero', 'MASCULINO')}
+                        />
+                        Masculino
+                      </label>
+                      <label>
+                        <input
+                          type="radio"
+                          name="genero"
+                          checked={form.genero === 'FEMININO'}
+                          onChange={() => atualizar('genero', 'FEMININO')}
+                        />
+                        Feminino
+                      </label>
+                    </div>
                   </div>
-                </div>
-              </>
-            ) : (
-              <Campo id="razaoSocial" rotulo="Razão social" erro={erros.razaoSocial}>
+                </>
+              ) : (
+                <Campo id="razaoSocial" rotulo="Razão social" erro={erros.razaoSocial}>
+                  <input
+                    id="razaoSocial"
+                    type="text"
+                    placeholder="Digite a razão social"
+                    value={form.razaoSocial}
+                    onChange={(e) => atualizar('razaoSocial', e.target.value)}
+                    aria-invalid={Boolean(erros.razaoSocial)}
+                  />
+                </Campo>
+              )}
+            </div>
+          </fieldset>
+
+          {/* ---------------- Endereço ---------------- */}
+          <fieldset className="colaborador-cadastro__secao">
+            <legend>
+              <MapPin size={16} />
+              Endereço
+            </legend>
+
+            <div className="colaborador-cadastro__grade colaborador-cadastro__grade--endereco-1">
+              <Campo id="cep" rotulo="CEP" erro={erros.cep}>
                 <input
-                  id="razaoSocial"
+                  id="cep"
                   type="text"
-                  placeholder="Digite a razão social"
-                  value={form.razaoSocial}
-                  onChange={(e) => atualizar('razaoSocial', e.target.value)}
-                  aria-invalid={Boolean(erros.razaoSocial)}
+                  inputMode="numeric"
+                  placeholder="00000-000"
+                  value={form.cep}
+                  onChange={(e) => atualizar('cep', formatarCep(e.target.value))}
+                  onBlur={(e) => aoSairDoCep(e.target.value)}
+                  aria-invalid={Boolean(erros.cep)}
                 />
               </Campo>
-            )}
+
+              <Campo id="logradouro" rotulo="Rua" erro={erros.logradouro}>
+                <input
+                  id="logradouro"
+                  type="text"
+                  placeholder="Digite o nome da rua"
+                  value={form.logradouro}
+                  onChange={(e) => atualizar('logradouro', e.target.value)}
+                  aria-invalid={Boolean(erros.logradouro)}
+                />
+              </Campo>
+
+              <Campo id="numero" rotulo="Número" erro={erros.numero}>
+                <input
+                  id="numero"
+                  type="text"
+                  placeholder="123"
+                  value={form.numero}
+                  onChange={(e) => atualizar('numero', e.target.value)}
+                  aria-invalid={Boolean(erros.numero)}
+                />
+              </Campo>
+
+              <Campo id="complemento" rotulo="Complemento" obrigatorio={false}>
+                <input
+                  id="complemento"
+                  type="text"
+                  placeholder="Apto, Casa, Bloco..."
+                  value={form.complemento}
+                  onChange={(e) => atualizar('complemento', e.target.value)}
+                />
+              </Campo>
+            </div>
+
+            <div className="colaborador-cadastro__grade">
+              <Campo id="bairro" rotulo="Bairro" erro={erros.bairro}>
+                <input
+                  id="bairro"
+                  type="text"
+                  placeholder="Digite o nome do bairro"
+                  value={form.bairro}
+                  onChange={(e) => atualizar('bairro', e.target.value)}
+                  aria-invalid={Boolean(erros.bairro)}
+                />
+              </Campo>
+
+              <Campo id="cidade" rotulo="Cidade" erro={erros.cidade}>
+                <input
+                  id="cidade"
+                  type="text"
+                  placeholder="Digite o nome da cidade"
+                  value={form.cidade}
+                  onChange={(e) => atualizar('cidade', e.target.value)}
+                  aria-invalid={Boolean(erros.cidade)}
+                />
+              </Campo>
+
+              <Campo id="estado" rotulo="Estado" erro={erros.estado}>
+                <select
+                  id="estado"
+                  value={form.estado}
+                  onChange={(e) => atualizar('estado', e.target.value)}
+                  aria-invalid={Boolean(erros.estado)}
+                >
+                  <option value="">Selecione o estado</option>
+                  {ESTADOS.map((uf) => (
+                    <option key={uf} value={uf}>
+                      {uf}
+                    </option>
+                  ))}
+                </select>
+              </Campo>
+            </div>
+          </fieldset>
+
+          <div className="colaborador-cadastro__acoes">
+            <button
+              type="submit"
+              className="colaborador-cadastro__botao-cadastrar"
+              disabled={enviando}
+            >
+              {enviando
+                ? (editando ? 'Salvando...' : 'Cadastrando...')
+                : (editando ? 'Salvar alterações' : 'Cadastrar')}
+            </button>
           </div>
-        </fieldset>
-
-        {/* ---------------- Endereço ---------------- */}
-        <fieldset className="colaborador-cadastro__secao">
-          <legend>
-            <MapPin size={16} />
-            Endereço
-          </legend>
-
-          <div className="colaborador-cadastro__grade colaborador-cadastro__grade--endereco-1">
-            <Campo id="cep" rotulo="CEP" erro={erros.cep}>
-              <input
-                id="cep"
-                type="text"
-                inputMode="numeric"
-                placeholder="00000-000"
-                value={form.cep}
-                onChange={(e) => atualizar('cep', formatarCep(e.target.value))}
-                onBlur={(e) => buscarCep(e.target.value)}
-                aria-invalid={Boolean(erros.cep)}
-              />
-            </Campo>
-
-            <Campo id="logradouro" rotulo="Rua" erro={erros.logradouro}>
-              <input
-                id="logradouro"
-                type="text"
-                placeholder="Digite o nome da rua"
-                value={form.logradouro}
-                onChange={(e) => atualizar('logradouro', e.target.value)}
-                aria-invalid={Boolean(erros.logradouro)}
-              />
-            </Campo>
-
-            <Campo id="numero" rotulo="Número" erro={erros.numero}>
-              <input
-                id="numero"
-                type="text"
-                placeholder="123"
-                value={form.numero}
-                onChange={(e) => atualizar('numero', e.target.value)}
-                aria-invalid={Boolean(erros.numero)}
-              />
-            </Campo>
-
-            <Campo id="complemento" rotulo="Complemento" obrigatorio={false}>
-              <input
-                id="complemento"
-                type="text"
-                placeholder="Apto, Casa, Bloco..."
-                value={form.complemento}
-                onChange={(e) => atualizar('complemento', e.target.value)}
-              />
-            </Campo>
-          </div>
-
-          <div className="colaborador-cadastro__grade">
-            <Campo id="bairro" rotulo="Bairro" erro={erros.bairro}>
-              <input
-                id="bairro"
-                type="text"
-                placeholder="Digite o nome do bairro"
-                value={form.bairro}
-                onChange={(e) => atualizar('bairro', e.target.value)}
-                aria-invalid={Boolean(erros.bairro)}
-              />
-            </Campo>
-
-            <Campo id="cidade" rotulo="Cidade" erro={erros.cidade}>
-              <input
-                id="cidade"
-                type="text"
-                placeholder="Digite o nome da cidade"
-                value={form.cidade}
-                onChange={(e) => atualizar('cidade', e.target.value)}
-                aria-invalid={Boolean(erros.cidade)}
-              />
-            </Campo>
-
-            <Campo id="estado" rotulo="Estado" erro={erros.estado}>
-              <select
-                id="estado"
-                value={form.estado}
-                onChange={(e) => atualizar('estado', e.target.value)}
-                aria-invalid={Boolean(erros.estado)}
-              >
-                <option value="">Selecione o estado</option>
-                {ESTADOS.map((uf) => (
-                  <option key={uf} value={uf}>
-                    {uf}
-                  </option>
-                ))}
-              </select>
-            </Campo>
-          </div>
-        </fieldset>
-
-        <div className="colaborador-cadastro__acoes">
-          <button
-            type="submit"
-            className="colaborador-cadastro__botao-cadastrar"
-            disabled={enviando}
-          >
-            {enviando ? 'Cadastrando...' : 'Cadastrar'}
-          </button>
-        </div>
-      </form>
+        </form>
+      )}
     </section>
   )
 }

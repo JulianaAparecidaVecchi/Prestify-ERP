@@ -319,11 +319,7 @@ function ColaboradorPage() {
                             className="colaborador-page__botao colaborador-page__botao--editar"
                             title="Editar colaborador"
                             aria-label={`Editar ${nome}`}
-                            onClick={() =>
-                              window.alert(
-                                'A edição será implementada na próxima etapa.'
-                              )
-                            }
+                            onClick={() => navegar(`/rh/${colaborador.id}/editar`)}
                           >
                             <Pencil size={17} />
                           </button>

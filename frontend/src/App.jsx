@@ -141,7 +141,20 @@ function App() {
                         path="/configuracoes"
                         element={<PaginaEmBreve titulo="Configurações" />}
                     />
+                    {/* RH - Colaboradores */}
                     <Route
+                        path="/rh"
+                        element={<ColaboradorPage />}
+                      />
+                    <Route
+                        path="/rh/novo"
+                        element={<ColaboradorCadastroPage modo="criar" />}
+                      />
+                    <Route
+                        path="/rh/:id/editar"
+                        element={<ColaboradorCadastroPage modo="editar" />}
+                      />
+                      <Route
                         path="*"
                         element={<PaginaEmBreve titulo="Página não encontrada" />}
                     />

@@ -18,6 +18,20 @@ export const colaboradorService = {
     return Array.isArray(data) ? data : (data?.content ?? [])
   },
 
+  async buscarPorId(id, organizacaoId) {
+    const { data } = await api.get(`/colaboradores/${id}`, {
+      params: { organizacaoId },
+    })
+    return data
+  },
+
+  async atualizar(id, dados, organizacaoId) {
+    const { data } = await api.put(`/colaboradores/${id}`, dados, {
+      params: { organizacaoId },
+    })
+    return data
+  },
+
   async excluir(id, organizacaoId) {
     await api.delete(`/colaboradores/${id}`, { params: { organizacaoId } })
   },
