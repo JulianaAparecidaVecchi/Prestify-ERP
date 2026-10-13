@@ -1,19 +1,103 @@
 package com.prestify.erp.factory;
-import com.prestify.erp.entity.Servico; import com.prestify.erp.entity.ServicoPrecoUnico; import com.prestify.erp.entity.ServicoVariacao; import com.prestify.erp.dto.servico.ServicoRequestDTO; import com.prestify.erp.dto.servico.ServicoVariacaoRequestDTO; import com.prestify.erp.enums.TipoPrecoServico; import org.springframework.stereotype.Component; import java.util.ArrayList; import java.util.List;
-/** Factory Method: centraliza a criação das estruturas de preço de cada serviço. */
+
+import com.prestify.erp.dto.servico.ServicoRequestDTO;
+import com.prestify.erp.dto.servico.ServicoVariacaoRequestDTO;
+import com.prestify.erp.entity.Servico;
+import com.prestify.erp.entity.ServicoPrecoUnico;
+import com.prestify.erp.entity.ServicoVariacao;
+import com.prestify.erp.enums.TipoPrecoServico;
+import jakarta.persistence.EntityManager;
+import org.springframework.stereotype.Component;
+
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * Factory Method:
+ * centraliza a criação das estruturas de preço dos serviços.
+ */
 @Component
 public class PrecoServicoFactory {
- public ServicoPrecoUnico criarPrecoUnico(Servico servico, java.math.BigDecimal preco) { ServicoPrecoUnico item = new ServicoPrecoUnico(); item.setServico(servico); item.setPreco(preco); return item; }
- public List<ServicoVariacao> criarVariacoes(Servico servico, List<ServicoVariacaoRequestDTO> dados) {
-  List<ServicoVariacao> resultado = new ArrayList<>();
-  if (dados != null) for (ServicoVariacaoRequestDTO dado : dados) { ServicoVariacao item = new ServicoVariacao(); item.setServico(servico); item.setNome(dado.getNome().trim()); item.setDescricao(dado.getDescricao()==null ? null : dado.getDescricao().trim()); item.setPreco(dado.getPreco()); resultado.add(item); }
-  return resultado;
- }
- public void configurarPreco(Servico servico, ServicoRequestDTO dados) {
-  servico.setTipoPreco(dados.getTipoPreco());
-  servico.setPrecoUnico(null);
-  servico.substituirVariacoes(List.of());
-  if (dados.getTipoPreco() == TipoPrecoServico.UNICO) servico.setPrecoUnico(criarPrecoUnico(servico, dados.getPreco()));
-  else servico.substituirVariacoes(criarVariacoes(servico, dados.getVariacoes()));
- }
+
+    private final EntityManager entityManager;
+
+    public PrecoServicoFactory(EntityManager entityManager) {
+        this.entityManager = entityManager;
+    }
+
+    public ServicoPrecoUnico criarPrecoUnico(
+            Servico servico,
+            BigDecimal preco
+    ) {
+        ServicoPrecoUnico item = new ServicoPrecoUnico();
+        item.setServico(servico);
+        item.setPreco(preco);
+        return item;
+    }
+
+    public List<ServicoVariacao> criarVariacoes(
+            Servico servico,
+            List<ServicoVariacaoRequestDTO> dados
+    ) {
+        List<ServicoVariacao> resultado = new ArrayList<>();
+
+        if (dados != null) {
+            for (ServicoVariacaoRequestDTO dado : dados) {
+                ServicoVariacao item = new ServicoVariacao();
+
+                item.setServico(servico);
+                item.setNome(dado.getNome().trim());
+                item.setDescricao(
+                        dado.getDescricao() == null
+                                || dado.getDescricao().isBlank()
+                                ? null
+                                : dado.getDescricao().trim()
+                );
+                item.setPreco(dado.getPreco());
+
+                resultado.add(item);
+            }
+        }
+
+        return resultado;
+    }
+
+    public void configurarPreco(
+            Servico servico,
+            ServicoRequestDTO dados
+    ) {
+        /*
+         * Primeiro, removemos as estruturas de preço antigas.
+         * O orphanRemoval das entidades remove os registros
+         * antigos quando o Hibernate sincroniza as alterações.
+         */
+        servico.setPrecoUnico(null);
+        servico.substituirVariacoes(List.of());
+
+        /*
+         * Força o Hibernate a sincronizar as exclusões antes
+         * de criar os novos registros de preço.
+         *
+         * Isso evita conflitos com restrições únicas, como
+         * servico_id e (servico_id, nome).
+         */
+        entityManager.flush();
+
+        /*
+         * Depois da remoção dos preços antigos, configuramos
+         * o novo tipo e criamos a estrutura correspondente.
+         */
+        servico.setTipoPreco(dados.getTipoPreco());
+
+        if (dados.getTipoPreco() == TipoPrecoServico.UNICO) {
+            servico.setPrecoUnico(
+                    criarPrecoUnico(servico, dados.getPreco())
+            );
+        } else if (dados.getTipoPreco() == TipoPrecoServico.VARIACOES) {
+            servico.substituirVariacoes(
+                    criarVariacoes(servico, dados.getVariacoes())
+            );
+        }
+    }
 }
