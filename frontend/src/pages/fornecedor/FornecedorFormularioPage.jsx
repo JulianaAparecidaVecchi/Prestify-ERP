@@ -64,6 +64,10 @@ function FornecedorFormularioPage({ modo = 'criar' }) {
           endereco: {
             ...FORM_VAZIO.endereco,
             ...(fornecedor.endereco || {}),
+            rua:
+              fornecedor.endereco?.rua ??
+              fornecedor.endereco?.logradouro ??
+              '',
           },
         })
       } catch (e) {

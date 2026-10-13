@@ -19,3 +19,6 @@ export const inativarFornecedor = (id) =>
 
 export const reativarFornecedor = (id) =>
   http.patch(`${CAMINHO}/${id}/reativar`)
+
+export const excluirFornecedor = (id) =>
+  http.delete(`${CAMINHO}/${id}`)

@@ -172,6 +172,15 @@
   color: #267a34;
 }
 
+.pagina-fornecedor__acao--excluir {
+  background: #ffdede;
+  color: #b52626;
+}
+
+.pagina-fornecedor__acao--excluir:hover {
+  background: #ffcaca;
+}
+
 .pagina-fornecedor__rodape-tabela {
   display: flex;
   align-items: center;

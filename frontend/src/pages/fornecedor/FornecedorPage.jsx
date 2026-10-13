@@ -9,12 +9,14 @@ import {
   Search,
   SlidersHorizontal,
   Power,
+  Trash2,
 } from 'lucide-react'
 
 import {
   listarFornecedores,
   inativarFornecedor,
   reativarFornecedor,
+  excluirFornecedor,
 } from '../../api/fornecedorApi'
 
 import Botao from '../../components/ui/Botao'
@@ -50,6 +52,10 @@ function FornecedorPage() {
   const [fornecedorParaAlterar, setFornecedorParaAlterar] = useState(null)
   const [alterandoStatus, setAlterandoStatus] = useState(false)
   const [erroStatus, setErroStatus] = useState('')
+
+  const [fornecedorParaExcluir, setFornecedorParaExcluir] = useState(null)
+  const [excluindo, setExcluindo] = useState(false)
+  const [erroExclusao, setErroExclusao] = useState('')
 
   const carregarFornecedores = useCallback(async () => {
     setCarregando(true)
@@ -160,6 +166,38 @@ function FornecedorPage() {
 
   const fornecedorSelecionadoAtivo =
     fornecedorParaAlterar?.ativo !== false
+
+  function abrirConfirmacaoExclusao(fornecedor) {
+    setFornecedorParaExcluir(fornecedor)
+    setErroExclusao('')
+  }
+
+  function cancelarExclusao() {
+    if (excluindo) return
+
+    setFornecedorParaExcluir(null)
+    setErroExclusao('')
+  }
+
+  async function confirmarExclusao() {
+    if (!fornecedorParaExcluir) return
+
+    setExcluindo(true)
+    setErroExclusao('')
+
+    try {
+      await excluirFornecedor(fornecedorParaExcluir.id)
+
+      setFornecedorParaExcluir(null)
+      await carregarFornecedores()
+    } catch (falha) {
+      setErroExclusao(
+        falha.message || 'Não foi possível excluir o fornecedor.'
+      )
+    } finally {
+      setExcluindo(false)
+    }
+  }
 
   return (
     <section className="pagina-fornecedor">
@@ -315,6 +353,16 @@ function FornecedorPage() {
                         >
                           <Power size={15} />
                         </button>
+
+                        <button
+                          type="button"
+                          className="pagina-fornecedor__acao pagina-fornecedor__acao--excluir"
+                          title="Excluir"
+                          aria-label={`Excluir ${nomeFornecedor(fornecedor)}`}
+                          onClick={() => abrirConfirmacaoExclusao(fornecedor)}
+                        >
+                          <Trash2 size={15} />
+                        </button>
                       </div>
                     </td>
                   </tr>
@@ -391,6 +439,21 @@ function FornecedorPage() {
         erro={erroStatus}
         onConfirmar={confirmarAlteracao}
         onCancelar={cancelarAlteracao}
+      />
+
+      <ModalConfirmacao
+        aberto={Boolean(fornecedorParaExcluir)}
+        titulo="Excluir fornecedor"
+        mensagem={
+          fornecedorParaExcluir
+            ? `Deseja realmente excluir o fornecedor "${nomeFornecedor(fornecedorParaExcluir)}"? Essa ação pode ser permanente.`
+            : ''
+        }
+        textoConfirmar="Excluir"
+        carregando={excluindo}
+        erro={erroExclusao}
+        onConfirmar={confirmarExclusao}
+        onCancelar={cancelarExclusao}
       />
     </section>
   )
