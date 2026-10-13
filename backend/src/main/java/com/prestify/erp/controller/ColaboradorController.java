@@ -2,6 +2,7 @@ package com.prestify.erp.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.web.PagedModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -9,7 +10,6 @@ import com.prestify.erp.dto.colaborador.ColaboradorRequestDTO;
 import com.prestify.erp.dto.colaborador.ColaboradorResponseDTO;
 import com.prestify.erp.service.ColaboradorService;
 
-import java.util.List;
 
 /**
  * UC6 - Gerenciar usuário (colaboradores da organização).
@@ -36,8 +36,14 @@ public class ColaboradorController {
     }
 
     @GetMapping
-    public List<ColaboradorResponseDTO> listar(@RequestParam Long organizacaoId) {
-        return colaboradorService.listar(organizacaoId);
+    public PagedModel<ColaboradorResponseDTO> listar(
+            @RequestParam Long organizacaoId,
+            @RequestParam(value = "busca", required = false) String busca,
+            @RequestParam(value = "pagina", defaultValue = "0") int pagina,
+            @RequestParam(value = "tamanho", defaultValue = "5") int tamanho) {
+
+        return new PagedModel<>(
+                colaboradorService.listar(organizacaoId, busca, pagina, tamanho));
     }
 
     @GetMapping("/{id}")

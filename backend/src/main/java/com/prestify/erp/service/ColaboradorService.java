@@ -1,6 +1,9 @@
 package com.prestify.erp.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,6 +18,7 @@ import com.prestify.erp.repository.ColaboradorRepository;
 
 import static com.prestify.erp.exception.ColaboradorExceptions.*;
 
+import java.util.Comparator;
 import java.util.List;
 
 @Service
@@ -49,11 +53,40 @@ public class ColaboradorService {
         return ColaboradorResponseDTO.fromEntity(colaboradorRepository.save(colaborador));
     }
 
+    /**
+     * Lista os colaboradores da organização, ordenados por nome.
+     * "busca" procura no nome, no e-mail e no CPF/CNPJ (com ou sem pontuação).
+     * Filtra e pagina em memória: para a quantidade de funcionários de uma
+     * empresa é suficiente. Se crescer muito, vale mover para consulta no banco.
+     */
     @Transactional(readOnly = true)
-    public List<ColaboradorResponseDTO> listar(Long organizacaoId) {
-        return colaboradorRepository.findAllByOrganizacaoId(organizacaoId).stream()
+    public Page<ColaboradorResponseDTO> listar(Long organizacaoId, String busca, int pagina, int tamanho) {
+        if (pagina < 0) {
+            throw new DadosInvalidosException("A página deve ser maior ou igual a zero.");
+        }
+        if (tamanho < 1 || tamanho > 100) {
+            throw new DadosInvalidosException("A quantidade por página deve estar entre 1 e 100.");
+        }
+
+        String termo = busca == null ? "" : busca.trim().toLowerCase();
+        String termoDocumento = termo.replaceAll("\\D", "");
+
+        List<ColaboradorResponseDTO> filtrados = colaboradorRepository.findAllByOrganizacaoId(organizacaoId).stream()
                 .map(ColaboradorResponseDTO::fromEntity)
+                .filter(c -> termo.isEmpty() || corresponde(c, termo, termoDocumento))
+                .sorted(Comparator.comparing(ColaboradorResponseDTO::nome, String.CASE_INSENSITIVE_ORDER))
                 .toList();
+
+        int inicio = (int) Math.min((long) pagina * tamanho, filtrados.size());
+        int fim = Math.min(inicio + tamanho, filtrados.size());
+
+        return new PageImpl<>(filtrados.subList(inicio, fim), PageRequest.of(pagina, tamanho), filtrados.size());
+    }
+
+    private boolean corresponde(ColaboradorResponseDTO c, String termo, String termoDocumento) {
+        return c.nome().toLowerCase().contains(termo)
+                || c.email().toLowerCase().contains(termo)
+                || (!termoDocumento.isEmpty() && c.documento().contains(termoDocumento));
     }
 
     @Transactional(readOnly = true)
