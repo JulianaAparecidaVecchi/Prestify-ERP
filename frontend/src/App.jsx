@@ -1,6 +1,10 @@
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
 
 import LayoutPrincipal from './layouts/LayoutPrincipal'
+import { AuthProvider } from './contexts/AuthContext'
+import RotaProtegida from './components/auth/RotaProtegida'
+import LoginPage from './pages/auth/LoginPage'
+import './pages/auth/LoginPage.css'
 
 import CategoriaPage from './pages/categorias/CategoriaPage'
 import FormularioCategoria from './pages/categorias/FormularioCategoria'
@@ -28,147 +32,153 @@ import MovimentacoesEstoquePage from './pages/estoque/MovimentacoesEstoquePage'
 function App() {
     return (
         <BrowserRouter>
-            <Routes>
-                <Route
-                    path="/"
-                    element={<Navigate to="/servicos" replace />}
-                />
+            <AuthProvider>
+                <Routes>
+                    <Route path="/login" element={<LoginPage />} />
 
-                <Route element={<LayoutPrincipal />}>
-                    <Route
-                        path="/dashboard"
-                        element={<PaginaEmBreve titulo="Início" />}
-                    />
-                    <Route
-                        path="/agenda"
-                        element={<PaginaEmBreve titulo="Agenda" />}
-                    />
+                    <Route element={<RotaProtegida />}>
+                        <Route
+                            path="/"
+                            element={<Navigate to="/servicos" replace />}
+                        />
 
-                    {/* Categorias */}
-                    <Route
-                        path="/categorias"
-                        element={<CategoriaPage />}
-                    />
-                    <Route
-                        path="/categorias/nova"
-                        element={<FormularioCategoria modo="criar" />}
-                    />
-                    <Route
-                        path="/categorias/:id/editar"
-                        element={<FormularioCategoria modo="editar" />}
-                    />
-                    <Route
-                        path="/categorias/:id"
-                        element={<FormularioCategoria modo="visualizar" />}
-                    />
+                        <Route element={<LayoutPrincipal />}>
+                            <Route
+                                path="/dashboard"
+                                element={<PaginaEmBreve titulo="Início" />}
+                            />
+                            <Route
+                                path="/agenda"
+                                element={<PaginaEmBreve titulo="Agenda" />}
+                            />
 
-                    {/* Clientes */}
-                    <Route
-                        path="/clientes"
-                        element={<ClientePage />}
-                    />
-                    <Route
-                        path="/clientes/novo"
-                        element={<ClienteFormularioPage modo="criar" />}
-                    />
-                    <Route
-                        path="/clientes/:id/editar"
-                        element={<ClienteFormularioPage modo="editar" />}
-                    />
-                    <Route
-                        path="/clientes/:id"
-                        element={<ClienteFormularioPage modo="visualizar" />}
-                    />
+                            {/* Categorias */}
+                            <Route
+                                path="/categorias"
+                                element={<CategoriaPage />}
+                            />
+                            <Route
+                                path="/categorias/nova"
+                                element={<FormularioCategoria modo="criar" />}
+                            />
+                            <Route
+                                path="/categorias/:id/editar"
+                                element={<FormularioCategoria modo="editar" />}
+                            />
+                            <Route
+                                path="/categorias/:id"
+                                element={<FormularioCategoria modo="visualizar" />}
+                            />
 
-                    {/* Serviços */}
-                    <Route
-                        path="/servicos"
-                        element={<ServicoPage />}
-                    />
-                    <Route
-                        path="/servicos/novo"
-                        element={<ServicoFormularioPage modo="criar" />}
-                    />
-                    <Route
-                        path="/servicos/:id/editar"
-                        element={<ServicoFormularioPage modo="editar" />}
-                    />
-                    <Route
-                        path="/servicos/:id"
-                        element={<ServicoFormularioPage modo="visualizar" />}
-                    />
+                            {/* Clientes */}
+                            <Route
+                                path="/clientes"
+                                element={<ClientePage />}
+                            />
+                            <Route
+                                path="/clientes/novo"
+                                element={<ClienteFormularioPage modo="criar" />}
+                            />
+                            <Route
+                                path="/clientes/:id/editar"
+                                element={<ClienteFormularioPage modo="editar" />}
+                            />
+                            <Route
+                                path="/clientes/:id"
+                                element={<ClienteFormularioPage modo="visualizar" />}
+                            />
 
-                    {/* Estoque */}
-                    <Route
-                        path="/estoque"
-                        element={<EstoquePage />}
-                    />
-                    <Route
-                        path="/estoque/produtos/novo"
-                        element={<ProdutoEstoqueFormulario modo="criar" />}
-                    />
-                    <Route
-                        path="/estoque/produtos/:id/editar"
-                        element={<ProdutoEstoqueFormulario modo="editar" />}
-                    />
-                    <Route
-                        path="/estoque/movimentacoes"
-                        element={<MovimentacoesEstoquePage />}
-                    />
+                            {/* Serviços */}
+                            <Route
+                                path="/servicos"
+                                element={<ServicoPage />}
+                            />
+                            <Route
+                                path="/servicos/novo"
+                                element={<ServicoFormularioPage modo="criar" />}
+                            />
+                            <Route
+                                path="/servicos/:id/editar"
+                                element={<ServicoFormularioPage modo="editar" />}
+                            />
+                            <Route
+                                path="/servicos/:id"
+                                element={<ServicoFormularioPage modo="visualizar" />}
+                            />
 
-                    {/* Demais módulos ainda sem implementação */}
-                    <Route
-                        path="/produtos"
-                        element={<PaginaEmBreve titulo="Produtos" />}
-                    />
+                            {/* Estoque */}
+                            <Route
+                                path="/estoque"
+                                element={<EstoquePage />}
+                            />
+                            <Route
+                                path="/estoque/produtos/novo"
+                                element={<ProdutoEstoqueFormulario modo="criar" />}
+                            />
+                            <Route
+                                path="/estoque/produtos/:id/editar"
+                                element={<ProdutoEstoqueFormulario modo="editar" />}
+                            />
+                            <Route
+                                path="/estoque/movimentacoes"
+                                element={<MovimentacoesEstoquePage />}
+                            />
 
-                    {/* Fornecedores */}
-                    <Route
-                        path="/fornecedores"
-                        element={<FornecedorPage />}
-                    />
-                    <Route
-                        path="/fornecedores/novo"
-                        element={<FornecedorFormularioPage modo="criar" />}
-                    />
-                    <Route
-                        path="/fornecedores/:id/editar"
-                        element={<FornecedorFormularioPage modo="editar" />}
-                    />
-                    <Route
-                        path="/fornecedores/:id"
-                        element={<FornecedorFormularioPage modo="visualizar" />}
-                    />
+                            {/* Demais módulos ainda sem implementação */}
+                            <Route
+                                path="/produtos"
+                                element={<PaginaEmBreve titulo="Produtos" />}
+                            />
 
-                    <Route
-                        path="/financeiro"
-                        element={<PaginaEmBreve titulo="Financeiro" />}
-                    />
+                            {/* Fornecedores */}
+                            <Route
+                                path="/fornecedores"
+                                element={<FornecedorPage />}
+                            />
+                            <Route
+                                path="/fornecedores/novo"
+                                element={<FornecedorFormularioPage modo="criar" />}
+                            />
+                            <Route
+                                path="/fornecedores/:id/editar"
+                                element={<FornecedorFormularioPage modo="editar" />}
+                            />
+                            <Route
+                                path="/fornecedores/:id"
+                                element={<FornecedorFormularioPage modo="visualizar" />}
+                            />
 
-                    {/* RH - Colaboradores */}
-                    <Route
-                        path="/rh"
-                        element={<ColaboradorPage />}
-                    />
-                    <Route
-                        path="/rh/novo"
-                        element={<ColaboradorCadastroPage modo="criar" />}
-                    />
-                    <Route
-                        path="/rh/:id/editar"
-                        element={<ColaboradorCadastroPage modo="editar" />}
-                    />
+                            <Route
+                                path="/financeiro"
+                                element={<PaginaEmBreve titulo="Financeiro" />}
+                            />
 
-                    <Route
-                        path="/configuracoes"
-                        element={<PaginaEmBreve titulo="Configurações" />}
-                    />
-                    <Route
-                        path="*"
-                        element={<PaginaEmBreve titulo="Página não encontrada" />}
-                    />
-                </Route>
-            </Routes>
+                            {/* RH - Colaboradores */}
+                            <Route
+                                path="/rh"
+                                element={<ColaboradorPage />}
+                            />
+                            <Route
+                                path="/rh/novo"
+                                element={<ColaboradorCadastroPage modo="criar" />}
+                            />
+                            <Route
+                                path="/rh/:id/editar"
+                                element={<ColaboradorCadastroPage modo="editar" />}
+                            />
+
+                            <Route
+                                path="/configuracoes"
+                                element={<PaginaEmBreve titulo="Configurações" />}
+                            />
+                            <Route
+                                path="*"
+                                element={<PaginaEmBreve titulo="Página não encontrada" />}
+                            />
+                        </Route>
+                    </Route>
+                </Routes>
+            </AuthProvider>
         </BrowserRouter>
     )
 }

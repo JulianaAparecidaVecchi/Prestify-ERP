@@ -1,30 +1,44 @@
+import { obterSessao, encerrarSessao } from '../services/sessao'
+
 /*
-    http.js: único ponto de conexão com o backend.
-
-    Configuração (arquivo .env):
-        VITE_API_URL          endereço da API   (padrão: http://localhost:8080/api)
-        VITE_ORGANIZACAO_ID   id da organização (padrão: 1)
-
-    O backend exige o parâmetro "organizacaoId" em todas as rotas.
-    Enquanto não existe login, ele vem do .env.
+    Comunicação com o backend.
+    VITE_API_URL configura o endereço da API.
+    Token e organização são obtidos da sessão do usuário.
 */
+const URL_BASE = (import.meta.env.VITE_API_URL || 'http://localhost:8080/api').replace(/\/$/, '')
 
-const URL_BASE = import.meta.env.VITE_API_URL || 'http://localhost:8080/api'
-const ORGANIZACAO_ID = import.meta.env.VITE_ORGANIZACAO_ID || '1'
-
-// Acrescenta organizacaoId ao caminho da requisição
-function comOrganizacao(caminho) {
-    const separador = caminho.includes('?') ? '&' : '?'
-    return `${caminho}${separador}organizacaoId=${ORGANIZACAO_ID}`
+function comOrganizacao(caminho, organizacaoId) {
+    const [rota, consulta = ''] = caminho.split('?')
+    const parametros = new URLSearchParams(consulta)
+    parametros.set('organizacaoId', String(organizacaoId))
+    return `${rota}?${parametros.toString()}`
 }
 
-async function requisitar(caminho, opcoes = {}, formato = 'json') {
+async function requisitar(caminho, opcoes = {}, formato = 'json', autenticada = true) {
+    const sessao = autenticada ? obterSessao() : null
+
+    if (autenticada && !sessao) {
+        encerrarSessao()
+        throw new Error('Sua sessão expirou. Faça login novamente.')
+    }
+
+    const headers = new Headers(opcoes.headers)
+    headers.set('Content-Type', 'application/json')
+
+    if (sessao) {
+        headers.set('Authorization', `${sessao.tipoToken} ${sessao.token}`)
+    }
+
+    const rota = sessao
+        ? comOrganizacao(caminho, sessao.organizacaoId)
+        : caminho
+
     let resposta
 
     try {
-        resposta = await fetch(`${URL_BASE}${comOrganizacao(caminho)}`, {
-            headers: { 'Content-Type': 'application/json' },
+        resposta = await fetch(`${URL_BASE}${rota}`, {
             ...opcoes,
+            headers,
         })
     } catch {
         throw new Error(
@@ -35,21 +49,28 @@ async function requisitar(caminho, opcoes = {}, formato = 'json') {
     if (!resposta.ok) {
         let mensagem = `Erro ${resposta.status} ao se comunicar com o servidor.`
 
-        // Usa a mensagem enviada pelo backend, quando disponível
         try {
             const corpo = await resposta.json()
             mensagem = corpo.mensagem || corpo.message || corpo.erro || mensagem
         } catch {
-            // Resposta sem corpo JSON: mantém a mensagem padrão
+            // Resposta sem JSON: mantém a mensagem padrão.
         }
 
-        throw new Error(mensagem)
+        if (resposta.status === 401 && autenticada) {
+            // Uma resposta antiga não deve encerrar um login mais recente.
+            const sessaoAtual = obterSessao()
+
+            if (!sessaoAtual || sessaoAtual.token === sessao.token) {
+                encerrarSessao()
+            }
+        }
+
+        const erro = new Error(mensagem)
+        erro.status = resposta.status
+        throw erro
     }
 
-    // 204 indica sucesso sem conteúdo
-    if (resposta.status === 204) {
-        return null
-    }
+    if (resposta.status === 204) return null
 
     return formato === 'blob' ? resposta.blob() : resposta.json()
 }
@@ -72,12 +93,18 @@ async function baixar(caminho, nomeArquivo) {
     } finally {
         link.remove()
 
-        // Aguarda o início do download antes de liberar a URL
+        // Aguarda o início do download antes de liberar a URL.
         setTimeout(() => URL.revokeObjectURL(url), 1000)
     }
 }
 
 export const http = {
+    login: (dados) =>
+        requisitar('/auth/login', {
+            method: 'POST',
+            body: JSON.stringify(dados),
+        }, 'json', false),
+
     get: (caminho) => requisitar(caminho),
 
     post: (caminho, dados) =>

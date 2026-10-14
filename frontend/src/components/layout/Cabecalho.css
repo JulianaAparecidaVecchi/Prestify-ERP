@@ -1,88 +1,156 @@
-/* =====================================================
-   Cabecalho — barra superior
-   Visual: sem título, tudo alinhado à direita:
-   sino, avatar com iniciais, nome, perfil e seta.
-   ===================================================== */
+/* Barra superior: notificações, avatar, nome e função. */
 
 .cabecalho {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  gap: var(--espaco-4);
-  width: 100%;
-  min-height: 72px;
-  padding: var(--espaco-4) var(--espaco-6);
-  background: var(--cor-fundo-pagina);
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: var(--espaco-4);
+    width: 100%;
+    min-height: 72px;
+    padding: var(--espaco-4) var(--espaco-6);
+    background: var(--cor-fundo-pagina);
 }
 
-/* Botões sem aparência de botão (só o conteúdo aparece) */
 .cabecalho__notificacoes,
 .cabecalho__perfil {
-  display: flex;
-  align-items: center;
-  border: none;
-  background: transparent;
-  color: var(--cor-texto);
+    display: flex;
+    align-items: center;
+    border: none;
+    background: transparent;
+    color: var(--cor-texto);
 }
 
 .cabecalho__notificacoes {
-  padding: var(--espaco-1);
-  border-radius: var(--raio-md);
+    padding: var(--espaco-1);
+    border-radius: var(--raio-md);
 }
 
 .cabecalho__perfil {
-  gap: var(--espaco-3);
-  padding: 0;
-  text-align: left;
+    gap: var(--espaco-3);
+    padding: 0;
+    text-align: left;
 }
-
-/* ---------- Avatar ---------- */
 
 .cabecalho__avatar {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 44px;
-  height: 44px;
-  border-radius: var(--raio-total);
-  color: var(--cor-texto);
-  font-size: var(--texto-md);
-  font-weight: var(--peso-negrito);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 44px;
+    height: 44px;
+    border-radius: var(--raio-total);
+    color: var(--cor-texto);
+    font-size: var(--texto-md);
+    font-weight: var(--peso-negrito);
 }
 
-.cabecalho__avatar--cor-1 { background: var(--cor-avatar-1); }
-.cabecalho__avatar--cor-2 { background: var(--cor-avatar-2); }
-.cabecalho__avatar--cor-3 { background: var(--cor-avatar-3); }
-.cabecalho__avatar--cor-4 { background: var(--cor-avatar-4); }
-.cabecalho__avatar--cor-5 { background: var(--cor-avatar-5); }
+.cabecalho__avatar--cor-1 {
+    background: var(--cor-avatar-1);
+}
 
-/* ---------- Nome e perfil ---------- */
+.cabecalho__avatar--cor-2 {
+    background: var(--cor-avatar-2);
+}
+
+.cabecalho__avatar--cor-3 {
+    background: var(--cor-avatar-3);
+}
+
+.cabecalho__avatar--cor-4 {
+    background: var(--cor-avatar-4);
+}
+
+.cabecalho__avatar--cor-5 {
+    background: var(--cor-avatar-5);
+}
 
 .cabecalho__informacoes-usuario {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
 }
 
 .cabecalho__nome-usuario {
-  font-size: var(--texto-md);
-  font-weight: var(--peso-medio);
-  line-height: 1.2;
+    max-width: 220px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: var(--texto-md);
+    font-weight: var(--peso-medio);
+    line-height: 1.2;
 }
 
 .cabecalho__perfil-usuario {
-  color: var(--cor-texto-secundario);
-  font-size: var(--texto-xs);
-  line-height: 1.2;
+    color: var(--cor-texto-secundario);
+    font-size: var(--texto-xs);
+    line-height: 1.2;
+}
+
+.cabecalho__conta {
+    position: relative;
+    min-width: 0;
+}
+
+.cabecalho__perfil > svg {
+    flex-shrink: 0;
+}
+
+.cabecalho__menu-conta {
+    position: absolute;
+    top: calc(100% + var(--espaco-3));
+    right: 0;
+    z-index: 20;
+    width: 280px;
+    max-width: calc(100vw - var(--largura-sidebar-compacta) - var(--espaco-6));
+    padding: var(--espaco-4);
+    border: 1px solid var(--cor-borda);
+    border-radius: var(--raio-lg);
+    background: var(--cor-fundo-pagina);
+    box-shadow: var(--sombra-card);
+}
+
+.cabecalho__email {
+    font-size: var(--texto-sm);
+    font-weight: var(--peso-semibold);
+    line-height: 1.5;
+    overflow-wrap: anywhere;
+}
+
+.cabecalho__organizacao {
+    margin-top: var(--espaco-1);
+    color: var(--cor-texto-secundario);
+    font-size: var(--texto-xs);
+    line-height: 1.5;
+}
+
+.cabecalho__sair {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--espaco-2);
+    width: 100%;
+    min-height: var(--altura-campo);
+    margin-top: var(--espaco-4);
+    padding: var(--espaco-2) var(--espaco-3);
+    border: 1px solid var(--cor-borda);
+    border-radius: var(--raio-md);
+    background: var(--cor-fundo-campo);
+    color: var(--cor-primaria);
+    font-size: var(--texto-sm);
+    font-weight: var(--peso-semibold);
+}
+
+.cabecalho__sair:hover {
+    background: var(--cor-primaria-suave);
 }
 
 @media (max-width: 768px) {
-  .cabecalho {
-    min-height: 64px;
-    padding: var(--espaco-3) var(--espaco-4);
-  }
+    .cabecalho {
+        min-height: 64px;
+        padding: var(--espaco-3) var(--espaco-4);
+    }
 
-  .cabecalho__informacoes-usuario {
-    display: none;
-  }
+    .cabecalho__informacoes-usuario {
+        display: none;
+    }
 }
