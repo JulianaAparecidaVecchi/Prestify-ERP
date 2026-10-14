@@ -10,6 +10,8 @@ import com.prestify.erp.controller.ColaboradorController;
 import com.prestify.erp.exception.ColaboradorExceptions.ColaboradorNaoEncontradoException;
 import com.prestify.erp.exception.ColaboradorExceptions.DadosInvalidosException;
 import com.prestify.erp.exception.ColaboradorExceptions.EmailJaCadastradoException;
+import org.springframework.http.converter.HttpMessageNotReadableException;
+
 
 import static com.prestify.erp.exception.ColaboradorExceptions.*;
 
@@ -45,5 +47,10 @@ public class ColaboradorExceptionHandler {
 
     private ResponseEntity<Map<String, String>> resposta(HttpStatus status, String mensagem) {
         return ResponseEntity.status(status).body(Map.of("mensagem", mensagem));
+    }
+    
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<Map<String, String>> corpoInvalido(HttpMessageNotReadableException e) {
+        return resposta(HttpStatus.BAD_REQUEST, "Dados da requisição inválidos. Verifique os campos enviados.");
     }
 }

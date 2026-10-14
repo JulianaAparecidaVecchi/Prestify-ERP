@@ -15,6 +15,7 @@ import com.prestify.erp.entity.Colaborador;
 import com.prestify.erp.entity.ColaboradorPF;
 import com.prestify.erp.entity.ColaboradorPJ;
 import com.prestify.erp.repository.ColaboradorRepository;
+import com.prestify.erp.util.ValidadorDocumento;
 
 import static com.prestify.erp.exception.ColaboradorExceptions.*;
 
@@ -148,6 +149,9 @@ public class ColaboradorService {
                                       Long organizacaoId, Long ignorarId) {
         if (colaborador instanceof ColaboradorPF pf) {
             String cpf = documento(dto.cpf(), 11, "CPF");
+            if (!ValidadorDocumento.INSTANCIA.cpfValido(cpf)) {
+                throw new DadosInvalidosException("CPF inválido.");
+            }
             exigir(dto.dataNascimento(), "A data de nascimento é obrigatória.");
             exigir(dto.dataAdmissao(), "A data de admissão é obrigatória.");
             exigir(dto.genero(), "O gênero é obrigatório.");
@@ -161,6 +165,9 @@ public class ColaboradorService {
             pf.setGenero(dto.genero());
         } else if (colaborador instanceof ColaboradorPJ pj) {
             String cnpj = documento(dto.cnpj(), 14, "CNPJ");
+            if (!ValidadorDocumento.INSTANCIA.cnpjValido(cnpj)) {
+                throw new DadosInvalidosException("CNPJ inválido.");
+            }
             if (dto.razaoSocial() == null || dto.razaoSocial().isBlank()) {
                 throw new DadosInvalidosException("A razão social é obrigatória.");
             }
