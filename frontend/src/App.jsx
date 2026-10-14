@@ -18,6 +18,10 @@ import ClienteFormularioPage from './pages/clientes/ClienteFormularioPage'
 import './pages/clientes/ClientePage.css'
 import './pages/clientes/ClienteFormularioPage.css'
 
+import EstoquePage from './pages/estoque/EstoquePage'
+import ProdutoEstoqueFormulario from './pages/estoque/ProdutoEstoqueFormulario'
+import MovimentacoesEstoquePage from './pages/estoque/MovimentacoesEstoquePage'
+
 function App() {
     return (
         <BrowserRouter>
@@ -91,15 +95,30 @@ function App() {
                         element={<ServicoFormularioPage modo="visualizar" />}
                     />
 
+                    {/* Estoque */}
+                    <Route
+                        path="/estoque"
+                        element={<EstoquePage />}
+                    />
+                    <Route
+                        path="/estoque/produtos/novo"
+                        element={<ProdutoEstoqueFormulario modo="criar" />}
+                    />
+                    <Route
+                        path="/estoque/produtos/:id/editar"
+                        element={<ProdutoEstoqueFormulario modo="editar" />}
+                    />
+                    <Route
+                        path="/estoque/movimentacoes"
+                        element={<MovimentacoesEstoquePage />}
+                    />
+
                     {/* Demais módulos ainda sem implementação */}
                     <Route
                         path="/produtos"
                         element={<PaginaEmBreve titulo="Produtos" />}
                     />
-                    <Route
-                        path="/estoque"
-                        element={<PaginaEmBreve titulo="Estoque" />}
-                    />
+                    
 
                     {/* Fornecedores */}
                     <Route
