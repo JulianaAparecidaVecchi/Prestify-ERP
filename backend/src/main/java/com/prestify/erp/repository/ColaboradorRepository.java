@@ -13,6 +13,9 @@ public interface ColaboradorRepository extends JpaRepository<Colaborador, Long> 
 
     boolean existsByEmail(String email);
 
+    /** Localiza a conta para login sem diferenciar maiúsculas e minúsculas. */
+    Optional<Colaborador> findByEmailIgnoreCase(String email);
+
     List<Colaborador> findAllByOrganizacaoId(Long organizacaoId);
 
     Optional<Colaborador> findByIdAndOrganizacaoId(Long id, Long organizacaoId);
