@@ -1,11 +1,9 @@
 package com.prestify.erp.factory;
 
-import com.prestify.erp.dto.servico.ServicoRequestDTO;
 import com.prestify.erp.dto.servico.ServicoVariacaoRequestDTO;
 import com.prestify.erp.entity.Servico;
 import com.prestify.erp.entity.ServicoPrecoUnico;
 import com.prestify.erp.entity.ServicoVariacao;
-import com.prestify.erp.enums.TipoPrecoServico;
 import jakarta.persistence.EntityManager;
 import org.springframework.stereotype.Component;
 
@@ -14,8 +12,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Factory Method:
- * centraliza a criação das estruturas de preço dos serviços.
+ * Classe auxiliar dos processadores de serviço:
+ * centraliza a criação e a limpeza das estruturas de preço.
  */
 @Component
 public class PrecoServicoFactory {
@@ -63,10 +61,7 @@ public class PrecoServicoFactory {
         return resultado;
     }
 
-    public void configurarPreco(
-            Servico servico,
-            ServicoRequestDTO dados
-    ) {
+    public void limparPrecoAnterior(Servico servico) {
         /*
          * Primeiro, removemos as estruturas de preço antigas.
          * O orphanRemoval das entidades remove os registros
@@ -83,21 +78,5 @@ public class PrecoServicoFactory {
          * servico_id e (servico_id, nome).
          */
         entityManager.flush();
-
-        /*
-         * Depois da remoção dos preços antigos, configuramos
-         * o novo tipo e criamos a estrutura correspondente.
-         */
-        servico.setTipoPreco(dados.getTipoPreco());
-
-        if (dados.getTipoPreco() == TipoPrecoServico.UNICO) {
-            servico.setPrecoUnico(
-                    criarPrecoUnico(servico, dados.getPreco())
-            );
-        } else if (dados.getTipoPreco() == TipoPrecoServico.VARIACOES) {
-            servico.substituirVariacoes(
-                    criarVariacoes(servico, dados.getVariacoes())
-            );
-        }
     }
 }

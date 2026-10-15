@@ -5,26 +5,29 @@ import com.prestify.erp.dto.servico.ServicoRequestDTO;
 import com.prestify.erp.dto.servico.ServicoVariacaoResponseDTO;
 import com.prestify.erp.entity.Servico;
 import com.prestify.erp.entity.ServicoVariacao;
+import com.prestify.erp.enums.TipoPrecoServico;
 import com.prestify.erp.exception.ServicoRegraException;
 import com.prestify.erp.repository.ServicoRepository;
 import com.prestify.erp.template.ServicoProcessor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import java.util.EnumMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class ServicoService {
     private final ServicoRepository repository;
-    private final ServicoProcessor processor;
+    private final Map<TipoPrecoServico, ServicoProcessor> processors = new EnumMap<>(TipoPrecoServico.class);
 
-    public ServicoService(ServicoRepository repository, ServicoProcessor processor) {
+    public ServicoService(ServicoRepository repository, List<ServicoProcessor> listaProcessors) {
         this.repository = repository;
-        this.processor = processor;
+        listaProcessors.forEach(p -> processors.put(p.getTipoPreco(), p));
     }
 
     @Transactional
     public ServicoResponseDTO cadastrar(ServicoRequestDTO dados, Long organizacaoId) {
-        Servico servico = processor.processar(new Servico(), dados, organizacaoId, null);
+        Servico servico = obterProcessor(dados).processar(new Servico(), dados, organizacaoId, null);
         return converter(repository.save(servico));
     }
 
@@ -42,13 +45,20 @@ public class ServicoService {
     @Transactional
     public ServicoResponseDTO atualizar(Long id, ServicoRequestDTO dados, Long organizacaoId) {
         Servico servico = buscarEntidade(id, organizacaoId);
-        processor.processar(servico, dados, organizacaoId, id);
+        obterProcessor(dados).processar(servico, dados, organizacaoId, id);
         return converter(repository.save(servico));
     }
 
     @Transactional
     public void excluir(Long id, Long organizacaoId) {
         repository.delete(buscarEntidade(id, organizacaoId));
+    }
+
+    private ServicoProcessor obterProcessor(ServicoRequestDTO dados) {
+        if (dados.getTipoPreco() == null) throw new ServicoRegraException("Selecione o tipo de preço.");
+        ServicoProcessor processor = processors.get(dados.getTipoPreco());
+        if (processor == null) throw new ServicoRegraException("Tipo de preço inválido.");
+        return processor;
     }
 
     private Servico buscarEntidade(Long id, Long organizacaoId) {
