@@ -3,20 +3,26 @@ package com.prestify.erp.factory;
 import com.prestify.erp.entity.MovimentacaoEstoque;
 import com.prestify.erp.entity.Produto;
 import com.prestify.erp.enums.TipoMovimentacaoEstoque;
-import org.springframework.stereotype.Component;
 
-/**
- * Factory: concentra a criação de uma movimentação com os campos de histórico.
- */
-@Component
-public class MovimentacaoFactory {
+public abstract class MovimentacaoFactory {
+
+    public abstract TipoMovimentacaoEstoque getTipo();
+
+    protected abstract MovimentacaoEstoque criarMovimentacao();
+
+    public abstract int calcularNovaQuantidade(int quantidadeAtual, int quantidade);
+
+    public int calcularQuantidadeHistorico(int quantidadeAtual, int quantidadeNova, int quantidade) {
+        return quantidade;
+    }
+
     public MovimentacaoEstoque criar(Produto produto, Long organizacaoId,
-            TipoMovimentacaoEstoque tipo, int quantidadeMovimentada,
-            int quantidadeAnterior, int quantidadeNova, String motivo) {
-        MovimentacaoEstoque movimentacao = new MovimentacaoEstoque();
+            int quantidadeMovimentada, int quantidadeAnterior,
+            int quantidadeNova, String motivo) {
+
+        MovimentacaoEstoque movimentacao = criarMovimentacao();
         movimentacao.setProduto(produto);
         movimentacao.setOrganizacaoId(organizacaoId);
-        movimentacao.setTipo(tipo);
         movimentacao.setQuantidadeMovimentada(quantidadeMovimentada);
         movimentacao.setQuantidadeAnterior(quantidadeAnterior);
         movimentacao.setQuantidadeNova(quantidadeNova);
