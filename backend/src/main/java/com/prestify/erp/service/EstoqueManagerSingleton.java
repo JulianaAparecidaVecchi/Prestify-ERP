@@ -1,14 +1,17 @@
 package com.prestify.erp.service;
 
 import com.prestify.erp.enums.StatusEstoque;
-import org.springframework.stereotype.Component;
 
-/**
- * Regra compartilhada para classificar o nível do estoque.
- * O Spring gerencia este componente como singleton por padrão.
- */
-@Component
-public class EstoqueManagerSingleton {
+public final class EstoqueManagerSingleton {
+
+    private static final EstoqueManagerSingleton INSTANCIA = new EstoqueManagerSingleton();
+
+    private EstoqueManagerSingleton() {
+    }
+
+    public static EstoqueManagerSingleton getInstance() {
+        return INSTANCIA;
+    }
 
     public StatusEstoque calcularStatus(int quantidadeAtual, int quantidadeMinima) {
         if (quantidadeAtual <= 0) {
