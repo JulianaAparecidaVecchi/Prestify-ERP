@@ -13,26 +13,12 @@
   "tipo" é "SERVICO" ou "PRODUTO".
 */
 
-import { http } from './http'
+import { criarCrudApi } from './criarCrudApi'
 
-const CAMINHO = '/categorias'
+const api = criarCrudApi('/categorias')
 
-export function listarCategorias() {
-  return http.get(CAMINHO)
-}
-
-export function buscarCategoria(id) {
-  return http.get(`${CAMINHO}/${id}`)
-}
-
-export function criarCategoria(dados) {
-  return http.post(CAMINHO, dados)
-}
-
-export function atualizarCategoria(id, dados) {
-  return http.put(`${CAMINHO}/${id}`, dados)
-}
-
-export function excluirCategoria(id) {
-  return http.delete(`${CAMINHO}/${id}`)
-}
+export const listarCategorias = api.listar
+export const buscarCategoria = api.buscar
+export const criarCategoria = api.criar
+export const atualizarCategoria = api.atualizar
+export const excluirCategoria = api.excluir
