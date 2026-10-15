@@ -18,7 +18,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
-/** Configura o acesso às APIs por token JWT e organização autenticada. */
+/** Configura o acesso às APIs por JWT, função e organização autenticada. */
 @Configuration
 public class SecurityConfig {
 
@@ -50,7 +50,47 @@ public class SecurityConfig {
                 .dispatcherTypeMatchers(DispatcherType.ERROR).permitAll()
                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                 .requestMatchers(HttpMethod.POST, "/api/auth/login").permitAll()
-                .requestMatchers("/api/**").authenticated()
+
+                .requestMatchers("/api/colaboradores", "/api/colaboradores/**")
+                    .hasAnyRole("ADMINISTRADOR", "ANALISTA_RH")
+
+                .requestMatchers("/api/financeiro", "/api/financeiro/**")
+                    .hasAnyRole("ADMINISTRADOR", "ANALISTA_FINANCEIRO")
+
+                .requestMatchers("/api/estoque", "/api/estoque/**")
+                    .hasAnyRole(
+                        "ADMINISTRADOR",
+                        "ESTOQUISTA",
+                        "GERENTE_SUPRIMENTOS"
+                    )
+
+                .requestMatchers("/api/categorias", "/api/categorias/**")
+                    .hasAnyRole(
+                        "ADMINISTRADOR",
+                        "ESTOQUISTA",
+                        "GERENTE_SUPRIMENTOS",
+                        "PRESTADOR_SERVICO"
+                    )
+
+                .requestMatchers("/api/clientes", "/api/clientes/**")
+                    .hasAnyRole("ADMINISTRADOR", "COMERCIAL")
+
+                .requestMatchers("/api/fornecedores", "/api/fornecedores/**")
+                    .hasAnyRole("ADMINISTRADOR", "GERENTE_SUPRIMENTOS")
+
+                .requestMatchers("/api/produtos", "/api/produtos/**")
+                    .hasAnyRole("ADMINISTRADOR", "VENDEDOR")
+
+                .requestMatchers("/api/servicos", "/api/servicos/**")
+                    .hasAnyRole("ADMINISTRADOR", "PRESTADOR_SERVICO")
+
+                .requestMatchers("/api/agenda", "/api/agenda/**")
+                    .hasAnyRole("ADMINISTRADOR", "PRESTADOR_SERVICO")
+
+                .requestMatchers("/api/configuracoes", "/api/configuracoes/**")
+                    .hasRole("ADMINISTRADOR")
+
+                .requestMatchers("/api/**").hasRole("ADMINISTRADOR")
                 .anyRequest().denyAll()
             )
             .oauth2ResourceServer(oauth -> oauth

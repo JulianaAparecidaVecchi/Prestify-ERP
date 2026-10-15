@@ -6,9 +6,13 @@ import logoPrestify from '../../assets/logo-prestify.png'
 import Botao from '../../components/ui/Botao'
 import CampoFormulario from '../../components/ui/CampoFormulario'
 import { useAuth } from '../../contexts/AuthContext'
+import {
+    obterPaginaInicial,
+    podeAcessarCaminho,
+} from '../../services/permissoes'
 
 function LoginPage() {
-    const { autenticado, entrar } = useAuth()
+    const { autenticado, sessao, entrar } = useAuth()
     const localizacao = useLocation()
     const [email, setEmail] = useState('')
     const [senha, setSenha] = useState('')
@@ -24,8 +28,9 @@ function LoginPage() {
         && !solicitado.startsWith('//')
         && !solicitado.includes('\\')
         && solicitado.split(/[?#]/)[0] !== '/login'
+        && podeAcessarCaminho(sessao?.funcao, solicitado)
         ? solicitado
-        : '/servicos'
+        : obterPaginaInicial(sessao?.funcao)
 
     async function enviar(evento) {
         evento.preventDefault()
@@ -59,7 +64,7 @@ function LoginPage() {
         }
     }
 
-    if (autenticado) {
+    if (autenticado && destino !== '/login') {
         return <Navigate to={destino} replace />
     }
 
